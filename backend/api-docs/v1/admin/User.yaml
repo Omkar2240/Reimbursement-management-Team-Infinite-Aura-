@@ -1,0 +1,175 @@
+paths:
+  /admin/user/login:
+    post:
+      tags:
+        - "User"
+      summary: "Log in User"
+      description: ""
+      operationId: "userLogin"
+      requestBody:
+        description:  admin login using email
+        content:
+          "application/json":
+            schema:
+              $ref: "#/components/schemas/adminLogin"
+        required: true
+      produces:
+        - "application/json"
+      parameters: []
+      responses:
+        "200":
+          description: Logged in successfully"
+        "400":
+          description: "Invalid Request"
+        "500":
+          description: "Internal Server Error"
+  /admin/user:
+    get:
+     tags:
+       - "User"
+     summary: "get profile"
+     description: ""
+     operationId: "getProfile"
+     produces:
+       - "application/json"
+     parameters: [ ]
+     security:
+       - bearerAuth: [ ]
+     responses:
+       "200":
+         description: "get user profile details"
+       "400":
+         description: "Invalid Request"
+       "500":
+         description: "Internal Server Error"
+    put:
+      tags:
+        - "User"
+      summary: "Update your profile"
+      description: "Update admin or sub admin profile"
+      operationId: "updateProfile"
+      requestBody:
+        description: update profile
+        content:
+          "application/json":
+            schema:
+              $ref: "#/components/schemas/adminProfile"
+        required: true
+      produces:
+        - "application/json"
+      parameters: [ ]
+      security:
+        - bearerAuth: [ ]
+      responses:
+        "200":
+          description: "user created or updated successfully"
+        "400":
+          description: "Invalid Request"
+        "500":
+          description: "Internal Server Error"
+  /admin/user/send-otp:
+    post:
+      tags:
+        - "User"
+      summary: "send otp"
+      description: ""
+      operationId: "sendOtp"
+      requestBody:
+        description:  send otp
+        content:
+          "application/json":
+            schema:
+              $ref: "#/components/schemas/send-otp"
+        required: true
+      produces:
+        - "application/json"
+      parameters: []
+      responses:
+        "200":
+          description: "An OTP has been sent"
+        "400":
+          description: "Invalid Request | No user with this Email or mobile number"
+        "500":
+          description: "Internal Server Error"
+  /admin/user/password:
+    patch:
+      tags:
+        - "User"
+      summary: "Update password using OTP"
+      description: "Updates the user's password after verifying the OTP sent to their email."
+      operationId: "patchUpdatePasswordWithOtp"
+      requestBody:
+        description: "Verify OTP and update password"
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                  format: email
+                  example: "user@example.com"
+                tempOtp:
+                  type: string
+                  example: "123456"
+                password:
+                  type: string
+                  format: password
+                  example: "NewSecurePassword123"
+              required:
+                - email
+                - tempOtp
+                - password
+      responses:
+        "200":
+          description: "Password updated successfully"
+        "400":
+          description: "Invalid Request or Incorrect OTP"
+        "500":
+          description: "Internal Server Error"
+
+components:
+  schemas:
+    adminLogin:
+      type: object
+      properties:
+        email:
+          type: string
+          description: enter email address
+        password:
+          type: string
+          description: enter password
+    adminProfile:
+      type: object
+      properties:
+        email:
+          type: string
+          description: enter email address
+        password:
+          type: string
+          description: enter password
+        firstName:
+          type: string
+          description: enter first name
+        lastName:
+          type: string
+          description: enter last name
+    send-otp:
+      type: object
+      properties:
+        type:
+          type: string
+          description: enter type
+          enum: ['email', 'mobileNumber']
+        countryCode:
+          type: string
+          description: enter country code
+        mobileNumber:
+          type: string
+          description: enter mobile Number
+        email:
+          type: string
+          description: enter email
+      required:
+        - type

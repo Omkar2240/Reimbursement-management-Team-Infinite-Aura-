@@ -1,0 +1,88 @@
+{
+  "name": "flowexpense_core_service",
+  "version": "1.0.0",
+  "description": "Backend api service",
+  "main": "app.js",
+  "license": "MIT",
+  "scripts": {
+    "start": "npm run migrate:up && node app",
+    "lint": "eslint config/ controllers/ models/ routes/ schema-validation/ app.js --fix --cache",
+    "prettier": "prettier --config ./.prettierrc \"*/**/*{.js,.json,.html}\" --write",
+    "format": "npm run prettier && npm run lint",
+    "migrate:up": "npx sequelize-cli db:migrate",
+    "migrate:undo": "npx sequelize-cli db:migrate:undo",
+    "seed:up": "npx sequelize-cli db:seed:all",
+    "seed:undo": "npx sequelize-cli db:seed:undo"
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit": "pnpm run format"
+    }
+  },
+  "dependencies": {
+    "awesome-phonenumber": "^7.6.0",
+    "axios": "^1.13.2",
+    "bcryptjs": "^3.0.3",
+    "body-parser": "^2.2.1",
+    "chalk": "4.1.2",
+    "compression": "^1.8.1",
+    "cors": "^2.8.5",
+    "crypto": "^1.0.1",
+    "dotenv": "^17.2.3",
+    "ejs": "^3.1.10",
+    "errorhandler": "^1.5.2",
+    "exceljs": "^4.4.0",
+    "express": "^5.2.1",
+    "express-basic-auth": "^1.2.1",
+    "express-session": "^1.18.2",
+    "express-useragent": "^2.0.2",
+    "express-validator": "^7.3.1",
+    "jsonwebtoken": "^9.0.3",
+    "lodash": "^4.17.21",
+    "lusca": "^1.7.0",
+    "luxon": "^3.7.2",
+    "mime": "^4.1.0",
+    "morgan": "^1.10.1",
+    "morgan-body": "^2.6.9",
+    "multer": "^2.0.2",
+    "nanoid": "^5.1.6",
+    "node-cron": "^4.2.1",
+    "nodemailer": "^7.0.12",
+    "passport": "^0.7.0",
+    "passport-local": "^1.0.0",
+    "pdfmake": "^0.2.21",
+    "pg": "^8.16.3",
+    "pug": "^3.0.3",
+    "razorpay": "^2.9.6",
+    "sequelize": "^6.37.7",
+    "sequelize-cli": "^6.6.3",
+    "shortid": "^2.2.17",
+    "swagger-jsdoc": "^6.2.8",
+    "swagger-ui": "^5.31.0",
+    "swagger-ui-express": "^5.0.1",
+    "uuid": "^13.0.0",
+    "xlsx": "^0.18.5"
+  },
+  "devDependencies": {
+    "eslint": "^9.39.2",
+    "eslint-config-airbnb-base": "^15.0.0",
+    "eslint-config-prettier": "^10.1.8",
+    "eslint-plugin-import": "^2.32.0",
+    "eslint-plugin-prettier": "^5.5.4",
+    "husky": "^9.1.7",
+    "prettier": "^3.7.4",
+    "prettier-eslint": "^16.4.2"
+  },
+  "resolutions": {
+    "chalk": "4.1.2"
+  },
+  "engines": {
+    "node": ">=20.12.1"
+  },
+  "pnpm": {
+    "onlyBuiltDependencies": [
+      "bcrypt"
+    ]
+  },
+  "packageManager": "pnpm@10.26.2"
+}

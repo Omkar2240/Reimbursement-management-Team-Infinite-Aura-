@@ -1,0 +1,38 @@
+doctype html
+html(lang='en')
+  head
+    title #{title}
+    link(rel='preconnect' href='https://fonts.googleapis.com')
+    link(rel='preconnect' href='https://fonts.gstatic.com' crossorigin)
+    link(href='https://fonts.googleapis.com/css2?family=Lexend:wght@300;400;500&display=swap' rel='stylesheet')
+    link(href="https://fonts.googleapis.com/icon?family=Material+Icons" rel='stylesheet')
+    | &#x9;
+    style.
+      .main-content {
+        max-width: inherit;
+        padding: 40px;
+        background-color: #f4f7fc;
+      }
+      .otp-card{
+        border-radius: 12px;
+        background-color:white;
+        padding: 30px;
+        text-align:center;
+        box-shadow:0px 8px 0px 0px #e8eaef;
+      }
+  body(style='margin: 0;background-color: #F9FAFC;padding: 28px;font: 14px / 20px "Lexend", sans-serif;')
+    include ./header
+    table(align='center' border='0' cellpadding='0' cellspacing='0' width='100%' style='background: white;max-width:660px;margin-top:30px;border:1px solid #D7DAE0;border-radius: 12px; ')
+      tr
+        td(align='center' valign='top' style='padding:40px 0px;')
+          div
+            p(style='font-size:14px;color: #5E6470;font-weight:500;color:#4d4d4d;margin: 0px;line-height:16px')
+              | #{mailMessage.line1}
+            div(style='display: inline-block; background-color: #F9FAFC;padding: 15px;border-radius: 5%;margin: 20px 0px')
+              p(style='font-size: 30px;font-weight:500;letter-spacing:8px;color: #6C7278;margin: 0px') #{tempOtp}
+
+            p(style='font-size:14px;color: #5E6470;font-weight:500;color:#4d4d4d;margin: 0px;line-height:16px')
+              | #{mailMessage.line2}
+            p(style='font-size:14px;color: #5E6470;font-weight:500;color:#4d4d4d;margin: 0px;line-height:16px')
+              | #{mailMessage.line3}
+    include ./footer
