@@ -2,7 +2,9 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import {
   deleteSubAdmin,
   getSubAdminById,
+  getManagerTeam,
   getSubAdmins,
+  patchAssignManager,
   patchSubAdminStatus,
   postSubAdmin,
   putSubAdmin
@@ -81,5 +83,25 @@ export const useUpdateSubAdminStatus = () => {
       await queryClient.invalidateQueries({ queryKey: ['sub-admins'] });
       toast.success('Status updated successfully');
     }
+  });
+};
+
+export const useAssignManager = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: ({ employeeId, managerId }: { employeeId: string; managerId: string }) =>
+      patchAssignManager(employeeId, managerId),
+    onSuccess: async () => {
+      await queryClient.invalidateQueries({ queryKey: ['sub-admins'] });
+      toast.success('Manager assigned successfully');
+    }
+  });
+};
+
+export const useManagerTeam = (managerId: string) => {
+  return useQuery({
+    queryKey: ['manager-team', managerId],
+    queryFn: () => getManagerTeam(managerId),
+    enabled: !!managerId
   });
 };

@@ -14,6 +14,7 @@ import {
   type ResetPasswordWithOtpFormValues
 } from "@/schemas/auth.schema"
 import { useLogin, useResetPasswordWithOtp, useSendOtp } from "@/hooks/auth/use-auth"
+import Link from "next/link"
 import {
   Form,
   FormControl,
@@ -32,7 +33,7 @@ export default function LogInViewPage() {
   const resetPasswordMutation = useResetPasswordWithOtp()
 
   const form = useForm<LoginFormValues>({
-    resolver: zodResolver(loginSchema as any),
+    resolver: zodResolver(loginSchema),
     defaultValues: {
       email: "",
       password: "",
@@ -40,7 +41,7 @@ export default function LogInViewPage() {
   })
 
   const resetPasswordForm = useForm<ResetPasswordWithOtpFormValues>({
-    resolver: zodResolver(resetPasswordWithOtpSchema as any),
+    resolver: zodResolver(resetPasswordWithOtpSchema),
     defaultValues: {
       email: "",
       otp: "",
@@ -68,7 +69,12 @@ export default function LogInViewPage() {
           Sign in to your account
         </h2>
         <p className="text-sm text-zinc-500 mt-2">
-          Your admin account is pre-created. Contact system admin if you do not have credentials.
+          Super Admin logs in with seeded credentials. New Admins can sign up here.
+        </p>
+        <p className="text-sm mt-2">
+          <Link href="/signup" className="text-primary underline underline-offset-2">
+            Create Admin account
+          </Link>
         </p>
       </div>
 
@@ -164,8 +170,7 @@ export default function LogInViewPage() {
               disabled={sendOtpMutation.isPending}
               onClick={async () => {
                 const email = resetPasswordForm.getValues("email")
-                const emailValidation = resetPasswordForm.trigger("email")
-                if (await emailValidation) {
+                if (await resetPasswordForm.trigger("email")) {
                   sendOtpMutation.mutate({ email })
                 }
               }}

@@ -3,6 +3,28 @@ import { ExpenseFormValues, Expense } from '@/schemas/expense.schema';
 
 const BASE_URLS = `/expenses`;
 
+export type ExpenseRule = {
+  id?: number | null;
+  stepNumber: number;
+  approverRole: string;
+  isManagerApprover?: boolean;
+  percentageThreshold?: number | null;
+  allowCfoShortcut?: boolean;
+};
+
+export type ConversionResult = {
+  amount: number;
+  from: string;
+  to: string;
+  rate: number;
+};
+
+export type ReceiptUploadResult = {
+  expenseId: number;
+  receiptUrl: string;
+  ocrExtractedData: Record<string, unknown> | null;
+};
+
 export const getExpenses = async (): Promise<Expense[]> => {
   return await apiClient.get(`${BASE_URLS}`);
 };
@@ -20,5 +42,35 @@ export const approveExpense = async (id: string): Promise<Expense> => {
 };
 
 export const rejectExpense = async (id: string, reason?: string): Promise<Expense> => {
-  return await apiClient.post(`${BASE_URLS}/${id}/reject`, { reason });
+  return await apiClient.patch(`${BASE_URLS}/${id}/reject`, { reason });
+};
+
+export const getPendingApprovals = async (): Promise<Expense[]> => {
+  return await apiClient.get(`${BASE_URLS}/pending-approvals`);
+};
+
+export const getTeamExpenses = async (): Promise<Expense[]> => {
+  return await apiClient.get(`${BASE_URLS}/team-expenses`);
+};
+
+export const getExpenseApprovalChain = async (
+  id: string
+): Promise<{ expense: Expense; rules: ExpenseRule[] }> => {
+  return await apiClient.get(`${BASE_URLS}/${id}/approval-chain`);
+};
+
+export const convertExpense = async (id: string, toCurrency: string): Promise<ConversionResult> => {
+  return await apiClient.get(`${BASE_URLS}/${id}/convert`, {
+    params: { toCurrency }
+  });
+};
+
+export const uploadExpenseReceipt = async (id: string, file: File): Promise<ReceiptUploadResult> => {
+  const formData = new FormData();
+  formData.append('receipt', file);
+  return await apiClient.post(`${BASE_URLS}/${id}/receipt`, formData, {
+    headers: {
+      'Content-Type': 'multipart/form-data'
+    }
+  });
 };

@@ -26,7 +26,11 @@ export default function ProtectedRoute({ children, allowedRoles }: ProtectedRout
       const hasPermission = allowedRoles.some(role => role.toUpperCase() === userRole)
       
         if (!hasPermission) {
-          router.replace("/expenses")
+          if ((userRole || "").toUpperCase() === "SUPER_ADMIN") {
+            router.replace("/super-admin")
+          } else {
+            router.replace("/expenses")
+          }
         }
       }
   }, [user, isLoading, isError, router, allowedRoles])

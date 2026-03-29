@@ -1,6 +1,6 @@
 "use client"
 
-import { useEffect } from "react"
+import { useEffect, useMemo } from "react"
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { Loader2 } from "lucide-react"
@@ -21,35 +21,30 @@ import {
 
 type FirstLoginSetupModalProps = {
   isOpen: boolean
-  userName?: string
+  firstName?: string
 }
 
-export default function FirstLoginSetupModal({ isOpen, userName }: FirstLoginSetupModalProps) {
+export default function FirstLoginSetupModal({ isOpen, firstName }: FirstLoginSetupModalProps) {
   const { data: countryData } = useCountries()
   const updateProfileMutation = useUpdateProfile()
 
-  const countries = countryData?.countries || []
-  const currencies = countryData?.currencies || []
+  const countries = useMemo(() => countryData?.countries || [], [countryData?.countries])
+  const currencies = useMemo(() => countryData?.currencies || [], [countryData?.currencies])
 
   const form = useForm<UpdateProfileFormValues>({
-    resolver: zodResolver(updateProfileSchema as any),
+    resolver: zodResolver(updateProfileSchema),
     defaultValues: {
-      name: userName || undefined,
       country: "",
-      currency_code: ""
+      currencyCode: ""
     }
   })
-
-  useEffect(() => {
-    form.setValue("name", userName || undefined)
-  }, [form, userName])
 
   const selectedCountry = form.watch("country")
   useEffect(() => {
     if (!selectedCountry) return
     const countryMatch = countries.find((country) => country.name === selectedCountry)
     if (countryMatch && countryMatch.currencies.length > 0) {
-      form.setValue("currency_code", countryMatch.currencies[0], {
+      form.setValue("currencyCode", countryMatch.currencies[0], {
         shouldDirty: true
       })
     }
@@ -66,7 +61,7 @@ export default function FirstLoginSetupModal({ isOpen, userName }: FirstLoginSet
       <div className="w-full max-w-xl rounded-lg border border-zinc-200 bg-white p-6 shadow-xl dark:border-zinc-800 dark:bg-zinc-950">
         <h2 className="text-xl font-semibold tracking-tight">Complete your admin setup</h2>
         <p className="mt-2 text-sm text-zinc-500">
-          Select your country and default currency to continue.
+          {`Hi${firstName ? ` ${firstName}` : ""}, select your country and default currency to continue.`}
         </p>
 
         <Form {...form}>
@@ -94,7 +89,7 @@ export default function FirstLoginSetupModal({ isOpen, userName }: FirstLoginSet
 
               <FormField
                 control={form.control}
-                name="currency_code"
+                name="currencyCode"
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>Currency</FormLabel>

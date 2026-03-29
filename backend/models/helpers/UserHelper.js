@@ -34,6 +34,10 @@ exports.modifyOutputData = (existingUser) => ({
   mobileNumber: existingUser.mobileNumber,
   countryCode: existingUser.countryCode,
   role: existingUser.role,
+  companyId: existingUser.companyId || null,
+  parentId: existingUser.parentId || null,
+  country: existingUser.country || null,
+  currencyCode: existingUser.currencyCode || null,
   isEmailVerified: existingUser.isEmailVerified,
   status: existingUser.status,
   profilePicture: existingUser.profilePicture,
@@ -55,6 +59,10 @@ exports.userAttributes = () => [
   'status',
   'profilePicture',
   'googleId',
+  'companyId',
+  'parentId',
+  'country',
+  'currencyCode',
 ];
 
 

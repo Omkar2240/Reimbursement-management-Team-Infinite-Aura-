@@ -1,11 +1,13 @@
 import { z } from 'zod';
 
-export const subAdminRoleSchema = z.enum(['MANAGER', 'EMPLOYEE', 'FINANCE', 'DIRECTOR']);
+export const subAdminRoleSchema = z.enum(['ADMIN', 'MANAGER', 'EMPLOYEE']);
 
 export const subAdminFormSchema = z.object({
-  name: z.string().min(2, 'Name is required'),
+  firstName: z.string().min(2, 'First name is required'),
+  lastName: z.string().optional(),
   email: z.string().email('Invalid email address'),
   role: subAdminRoleSchema,
+  mobileNumber: z.string().min(8, 'Mobile number is required'),
   is_active: z.boolean().default(true)
 });
 

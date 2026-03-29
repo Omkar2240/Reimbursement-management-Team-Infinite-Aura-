@@ -3,6 +3,7 @@ import {
   getMe,
   patchPasswordWithOtp,
   postLogin,
+  postSignup,
   postSendOtp,
   putProfile
 } from "@/services/auth.service"
@@ -10,11 +11,13 @@ import {
   LoginFormValues,
   ResetPasswordWithOtpFormValues,
   SendOtpFormValues,
+  SignupFormValues,
   UpdateProfileFormValues
 } from "@/schemas/auth.schema"
 import { toast } from "sonner"
 import { useRouter } from "next/navigation"
 import storage from "@/lib/storage"
+import { getErrorMessage } from "@/types/api"
 
 export const useCurrentUser = () => {
   const hasToken = Boolean(storage.getToken())
@@ -38,16 +41,59 @@ export const useLogin = () => {
       return res
     },
     onSuccess: async (res) => {
-      const token = res?.access_token || res?.token || res?.accessToken
+      const rawToken =
+        res?.data?.data?.token ||
+        res?.data?.data?.access_token ||
+        res?.data?.data?.accessToken ||
+        res?.data?.token ||
+        res?.data?.access_token ||
+        res?.data?.accessToken ||
+        res?.result?.data?.token ||
+        res?.token ||
+        res?.access_token ||
+        res?.accessToken
+
+      const token =
+        typeof rawToken === "string"
+          ? rawToken.replace(/^Bearer\s+/i, "").trim()
+          : undefined
+
       if (token) {
         storage.setToken(token)
+      } else {
+        toast.error("Login succeeded but token was missing in response")
+        return
       }
-      await queryClient.invalidateQueries({ queryKey: ["profile"] })
+      const profile = await queryClient.fetchQuery({
+        queryKey: ["profile"],
+        queryFn: getMe,
+      })
       toast.success("Login successful")
-      router.push("/expenses")
+      const userRole = (profile?.role || "").toUpperCase()
+      if (userRole === "SUPER_ADMIN") {
+        router.push("/super-admin")
+      } else {
+        router.push("/expenses")
+      }
     },
-    onError: (error: any) => {
-      toast.error(error?.message || "Invalid credentials")
+    onError: (error: unknown) => {
+      toast.error(getErrorMessage(error, "Invalid credentials"))
+    },
+  })
+}
+
+export const useSignup = () => {
+  const router = useRouter()
+  return useMutation({
+    mutationFn: async (data: SignupFormValues) => {
+      return await postSignup(data)
+    },
+    onSuccess: () => {
+      toast.success("Signup successful. Please login with your credentials.")
+      router.push("/login")
+    },
+    onError: (error: unknown) => {
+      toast.error(getErrorMessage(error, "Failed to sign up"))
     },
   })
 }
@@ -62,8 +108,8 @@ export const useUpdateProfile = () => {
       await queryClient.invalidateQueries({ queryKey: ["profile"] })
       toast.success("Profile updated")
     },
-    onError: (error: any) => {
-      toast.error(error?.message || "Failed to update profile")
+    onError: (error: unknown) => {
+      toast.error(getErrorMessage(error, "Failed to update profile"))
     },
   })
 }
@@ -77,8 +123,8 @@ export const useLogout = () => {
       toast.success("Logout successful")
       router.push("/login")
     },
-    onError: (error: any) => {
-      toast.error(error?.message || "Failed")
+    onError: (error: unknown) => {
+      toast.error(getErrorMessage(error, "Failed"))
     },
   })
 }
@@ -91,8 +137,8 @@ export const useSendOtp = () => {
     onSuccess: () => {
       toast.success("OTP sent successfully")
     },
-    onError: (error: any) => {
-      toast.error(error?.message || "Failed to send OTP")
+    onError: (error: unknown) => {
+      toast.error(getErrorMessage(error, "Failed to send OTP"))
     },
   })
 }
@@ -105,8 +151,8 @@ export const useResetPasswordWithOtp = () => {
     onSuccess: () => {
       toast.success("Password updated successfully")
     },
-    onError: (error: any) => {
-      toast.error(error?.message || "Failed to update password")
+    onError: (error: unknown) => {
+      toast.error(getErrorMessage(error, "Failed to update password"))
     },
   })
 }

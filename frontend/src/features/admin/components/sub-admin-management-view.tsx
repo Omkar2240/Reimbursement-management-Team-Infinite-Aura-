@@ -27,52 +27,72 @@ import {
   SubAdminFormValues
 } from "@/schemas/admin.schema"
 import {
+  useAssignManager,
   useCreateSubAdmin,
   useDeleteSubAdmin,
+  useManagerTeam,
   useSubAdmins,
   useUpdateSubAdmin,
   useUpdateSubAdminStatus
 } from "@/hooks/admin/use-sub-admins"
+import type { TeamMemberDto } from "@/services/sub-admin.service"
 
 type SubAdminRecord = {
-  id: string
-  name: string
+  id: string | number
+  firstName: string
+  lastName?: string
   email: string
   role: string
+  mobileNumber?: string
   is_active?: boolean
+  status?: string
+  parentId?: string | number
 }
 
 export default function SubAdminManagementView() {
-  const [editingId, setEditingId] = useState<string | null>(null)
+  const [editingId, setEditingId] = useState<string | number | null>(null)
+  const [selectedManagerId, setSelectedManagerId] = useState<string>("")
+  const [selectedEmployeeId, setSelectedEmployeeId] = useState<string>("")
 
   const { data, isLoading } = useSubAdmins()
+  const { data: teamData } = useManagerTeam(selectedManagerId)
   const createMutation = useCreateSubAdmin()
   const updateMutation = useUpdateSubAdmin()
   const deleteMutation = useDeleteSubAdmin()
   const statusMutation = useUpdateSubAdminStatus()
+  const assignManagerMutation = useAssignManager()
 
   const rows = useMemo<SubAdminRecord[]>(() => {
     if (Array.isArray(data)) return data
     if (Array.isArray(data?.items)) return data.items
     if (Array.isArray(data?.data)) return data.data
+    if (Array.isArray(data?.data?.rows)) return data.data.rows
     return []
   }, [data])
 
+  const managers = rows.filter((row) => (row.role || "").toUpperCase() === "MANAGER")
+  const employees = rows.filter((row) => (row.role || "").toUpperCase() === "EMPLOYEE")
+  const managerTeam = Array.isArray(teamData?.data) ? teamData.data : []
+
   const createForm = useForm<SubAdminFormValues>({
-    resolver: zodResolver(subAdminFormSchema as any),
+    resolver: zodResolver(subAdminFormSchema),
     defaultValues: {
-      name: "",
+      firstName: "",
+      lastName: "",
       email: "",
+      mobileNumber: "",
       role: "EMPLOYEE",
       is_active: true
     }
   })
 
   const editForm = useForm<SubAdminFormValues>({
-    resolver: zodResolver(subAdminFormSchema as any),
+    resolver: zodResolver(subAdminFormSchema),
     defaultValues: {
-      name: "",
+      firstName: "",
+      lastName: "",
       email: "",
+      mobileNumber: "",
       role: "EMPLOYEE",
       is_active: true
     }
@@ -82,8 +102,10 @@ export default function SubAdminManagementView() {
     createMutation.mutate(values, {
       onSuccess: () => {
         createForm.reset({
-          name: "",
+          firstName: "",
+          lastName: "",
           email: "",
+          mobileNumber: "",
           role: "EMPLOYEE",
           is_active: true
         })
@@ -94,10 +116,12 @@ export default function SubAdminManagementView() {
   const startEdit = (row: SubAdminRecord) => {
     setEditingId(row.id)
     editForm.reset({
-      name: row.name,
+      firstName: row.firstName,
+      lastName: row.lastName || "",
       email: row.email,
+      mobileNumber: row.mobileNumber || "",
       role: (row.role?.toUpperCase() as SubAdminFormValues["role"]) || "EMPLOYEE",
-      is_active: row.is_active ?? true
+      is_active: row.is_active ?? row.status === "active"
     })
   }
 
@@ -105,7 +129,7 @@ export default function SubAdminManagementView() {
     if (!editingId) return
     updateMutation.mutate(
       {
-        id: editingId,
+        id: String(editingId),
         data: values
       },
       {
@@ -132,12 +156,25 @@ export default function SubAdminManagementView() {
             <form onSubmit={createForm.handleSubmit(onCreate)} className="mt-4 space-y-4">
               <FormField
                 control={createForm.control}
-                name="name"
+                name="firstName"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Name</FormLabel>
+                    <FormLabel>First Name</FormLabel>
                     <FormControl>
-                      <Input placeholder="Jane Doe" {...field} />
+                      <Input placeholder="Jane" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={createForm.control}
+                name="lastName"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Last Name</FormLabel>
+                    <FormControl>
+                      <Input placeholder="Doe" {...field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -158,6 +195,19 @@ export default function SubAdminManagementView() {
               />
               <FormField
                 control={createForm.control}
+                name="mobileNumber"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Mobile Number</FormLabel>
+                    <FormControl>
+                      <Input placeholder="9999999999" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={createForm.control}
                 name="role"
                 render={({ field }) => (
                   <FormItem>
@@ -170,8 +220,6 @@ export default function SubAdminManagementView() {
                         <SelectContent>
                           <SelectItem value="EMPLOYEE">Employee</SelectItem>
                           <SelectItem value="MANAGER">Manager</SelectItem>
-                          <SelectItem value="FINANCE">Finance</SelectItem>
-                          <SelectItem value="DIRECTOR">Director</SelectItem>
                         </SelectContent>
                       </Select>
                     </FormControl>
@@ -194,10 +242,23 @@ export default function SubAdminManagementView() {
               <form onSubmit={editForm.handleSubmit(onEdit)} className="mt-4 space-y-4">
                 <FormField
                   control={editForm.control}
-                  name="name"
+                  name="firstName"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Name</FormLabel>
+                      <FormLabel>First Name</FormLabel>
+                      <FormControl>
+                        <Input {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={editForm.control}
+                  name="lastName"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Last Name</FormLabel>
                       <FormControl>
                         <Input {...field} />
                       </FormControl>
@@ -220,6 +281,19 @@ export default function SubAdminManagementView() {
                 />
                 <FormField
                   control={editForm.control}
+                  name="mobileNumber"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Mobile Number</FormLabel>
+                      <FormControl>
+                        <Input {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={editForm.control}
                   name="role"
                   render={({ field }) => (
                     <FormItem>
@@ -232,8 +306,6 @@ export default function SubAdminManagementView() {
                           <SelectContent>
                             <SelectItem value="EMPLOYEE">Employee</SelectItem>
                             <SelectItem value="MANAGER">Manager</SelectItem>
-                            <SelectItem value="FINANCE">Finance</SelectItem>
-                            <SelectItem value="DIRECTOR">Director</SelectItem>
                           </SelectContent>
                         </Select>
                       </FormControl>
@@ -279,7 +351,7 @@ export default function SubAdminManagementView() {
                 {rows.length ? (
                   rows.map((row) => (
                     <tr key={row.id} className="border-t border-zinc-100 dark:border-zinc-800">
-                      <td className="px-6 py-4">{row.name}</td>
+                      <td className="px-6 py-4">{`${row.firstName || ""} ${row.lastName || ""}`.trim()}</td>
                       <td className="px-6 py-4">{row.email}</td>
                       <td className="px-6 py-4">{row.role}</td>
                       <td className="px-6 py-4">
@@ -289,12 +361,12 @@ export default function SubAdminManagementView() {
                           disabled={statusMutation.isPending}
                           onClick={() =>
                             statusMutation.mutate({
-                              id: row.id,
-                              data: { is_active: !(row.is_active ?? true) }
+                              id: String(row.id),
+                              data: { is_active: !(row.is_active ?? row.status === "active") }
                             })
                           }
                         >
-                          {row.is_active ?? true ? "Active" : "Inactive"}
+                          {row.is_active ?? row.status === "active" ? "Active" : "Inactive"}
                         </button>
                       </td>
                       <td className="px-6 py-4 text-right space-x-2">
@@ -305,7 +377,7 @@ export default function SubAdminManagementView() {
                           variant="destructive"
                           size="sm"
                           disabled={deleteMutation.isPending}
-                          onClick={() => deleteMutation.mutate(row.id)}
+                          onClick={() => deleteMutation.mutate(String(row.id))}
                         >
                           Delete
                         </Button>
@@ -323,6 +395,69 @@ export default function SubAdminManagementView() {
             </table>
           </div>
         )}
+      </div>
+
+      <div className="rounded-lg border border-zinc-200 bg-white p-6 shadow-sm dark:border-zinc-800 dark:bg-zinc-950">
+        <h2 className="text-lg font-semibold">Manager Relationship</h2>
+        <p className="mt-1 text-sm text-zinc-500">
+          Assign an employee to a manager and view manager team members.
+        </p>
+        <div className="mt-4 grid gap-4 md:grid-cols-3">
+          <Select value={selectedEmployeeId} onValueChange={setSelectedEmployeeId}>
+            <SelectTrigger>
+              <SelectValue placeholder="Select Employee" />
+            </SelectTrigger>
+            <SelectContent>
+              {employees.map((employee) => (
+                  <SelectItem key={String(employee.id)} value={String(employee.id)}>
+                  {`${employee.firstName || ""} ${employee.lastName || ""}`.trim()}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+
+          <Select value={selectedManagerId} onValueChange={setSelectedManagerId}>
+            <SelectTrigger>
+              <SelectValue placeholder="Select Manager" />
+            </SelectTrigger>
+            <SelectContent>
+              {managers.map((manager) => (
+                  <SelectItem key={String(manager.id)} value={String(manager.id)}>
+                  {`${manager.firstName || ""} ${manager.lastName || ""}`.trim()}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+
+          <Button
+            onClick={() =>
+              assignManagerMutation.mutate({
+                employeeId: selectedEmployeeId,
+                managerId: selectedManagerId
+              })
+            }
+            disabled={!selectedEmployeeId || !selectedManagerId || assignManagerMutation.isPending}
+          >
+            Assign Manager
+          </Button>
+        </div>
+
+        {selectedManagerId ? (
+          <div className="mt-4 rounded border border-zinc-200 p-4 dark:border-zinc-800">
+            <h3 className="font-medium">Selected manager team</h3>
+            {managerTeam.length ? (
+              <ul className="mt-2 space-y-1 text-sm text-zinc-600 dark:text-zinc-300">
+                {managerTeam.map((member: TeamMemberDto) => (
+                  <li key={member.id}>
+                    {`${member.firstName || ""} ${member.lastName || ""}`.trim()} - {member.email}
+                  </li>
+                ))}
+              </ul>
+            ) : (
+              <p className="mt-2 text-sm text-zinc-500">No team members found.</p>
+            )}
+          </div>
+        ) : null}
       </div>
     </div>
   )

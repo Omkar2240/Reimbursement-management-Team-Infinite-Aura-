@@ -11,7 +11,11 @@ export default function AuthLayoutWrapper({ children }: { children: React.ReactN
   useEffect(() => {
     
     if (!isLoading && user) {
-      router.replace("/expenses")
+      if ((user.role || "").toUpperCase() === "SUPER_ADMIN") {
+        router.replace("/super-admin")
+      } else {
+        router.replace("/expenses")
+      }
     }
   }, [user, isLoading, router])
 

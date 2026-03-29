@@ -9,7 +9,7 @@ export const metadata: Metadata = {
 
 export default async function RulesPage() {
   return (
-    <ProtectedRoute allowedRoles={['ADMIN', 'SUPER_ADMIN']}>
+    <ProtectedRoute allowedRoles={['ADMIN']}>
       <RulesBuilderView />
     </ProtectedRoute>
   );

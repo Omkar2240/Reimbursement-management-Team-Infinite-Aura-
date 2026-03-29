@@ -7,10 +7,22 @@ export const loginSchema = z.object({
 
 export type LoginFormValues = z.infer<typeof loginSchema>
 
-export const updateProfileSchema = z.object({
-  name: z.string().min(2, "Name must be at least 2 characters").optional(),
+export const signupSchema = z.object({
+  firstName: z.string().min(2, "First name is required"),
+  lastName: z.string().min(2, "Last name is required"),
+  email: z.string().email("Invalid email address"),
+  countryCode: z.string().min(1, "Country code is required"),
+  mobileNumber: z.string().min(8, "Mobile number is required"),
+  password: z.string().min(8, "Password must be at least 8 characters"),
   country: z.string().min(1, "Country is required"),
-  currency_code: z.string().min(1, "Currency code is required"),
+  currencyCode: z.string().min(1, "Currency code is required"),
+})
+
+export type SignupFormValues = z.infer<typeof signupSchema>
+
+export const updateProfileSchema = z.object({
+  country: z.string().min(1, "Country is required"),
+  currencyCode: z.string().min(1, "Currency code is required"),
 })
 
 export type UpdateProfileFormValues = z.infer<typeof updateProfileSchema>
@@ -28,3 +40,5 @@ export const resetPasswordWithOtpSchema = z.object({
 })
 
 export type ResetPasswordWithOtpFormValues = z.infer<typeof resetPasswordWithOtpSchema>
+
+

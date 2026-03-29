@@ -6,9 +6,10 @@ import { getMe } from '@/services/auth.service';
 import storage from '@/lib/storage';
 import queryClient from '@/lib/react-query';
 import { useRouter } from 'next/navigation';
+import type { AuthUser } from '@/services/auth.service';
 
 type AuthContextType = {
-  user: any | null;
+  user: AuthUser | null;
   isLoading: boolean;
   isError: boolean;
   logout: () => void;

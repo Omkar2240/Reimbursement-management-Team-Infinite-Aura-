@@ -3,19 +3,35 @@
 import React from "react"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
-import { ShieldCheck, LayoutDashboard, Receipt, UserCog, Settings, Users } from "lucide-react"
+import { ShieldCheck, LayoutDashboard, Receipt, UserCog, Users } from "lucide-react"
 import { cn } from "@/lib/utils"
+import { useAuth } from "@/providers/auth-provider"
 
-const navigation = [
-  { name: "Overview", href: "/", icon: LayoutDashboard },
+const superAdminNavigation = [
+  { name: "Admin Dashboard", href: "/super-admin", icon: LayoutDashboard },
+]
+
+const adminNavigation = [
   { name: "Expenses", href: "/expenses", icon: Receipt },
   { name: "Team", href: "/admin/sub-admin", icon: Users },
   { name: "Admin Rules", href: "/admin/rules", icon: UserCog },
-  { name: "Settings", href: "/settings", icon: Settings },
 ]
+
+const managerNavigation = [{ name: "Expenses", href: "/expenses", icon: Receipt }]
+const employeeNavigation = [{ name: "Expenses", href: "/expenses", icon: Receipt }]
 
 export default function Sidebar() {
   const pathname = usePathname()
+  const { user } = useAuth()
+  const role = (user?.role || "").toUpperCase()
+  const navigation =
+    role === "SUPER_ADMIN"
+      ? superAdminNavigation
+      : role === "ADMIN"
+        ? adminNavigation
+        : role === "MANAGER"
+          ? managerNavigation
+          : employeeNavigation
 
   return (
     <div className="flex h-full w-64 flex-col gap-y-5 overflow-y-auto border-r border-zinc-200 bg-zinc-50 dark:border-zinc-800 dark:bg-zinc-950 px-6 pb-4">

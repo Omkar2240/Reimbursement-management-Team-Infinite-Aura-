@@ -1,5 +1,6 @@
 import { Metadata } from 'next';
 import ExpenseDashboardView from '@/features/expenses/components/expense-dashboard-view';
+import ProtectedRoute from '@/components/layout/protected-route';
 
 export const metadata: Metadata = {
   title: 'Expenses | FlowExpense',
@@ -8,6 +9,8 @@ export const metadata: Metadata = {
 
 export default async function ExpensesPage() {
   return (
-    <ExpenseDashboardView />
+    <ProtectedRoute allowedRoles={['ADMIN', 'MANAGER', 'EMPLOYEE']}>
+      <ExpenseDashboardView />
+    </ProtectedRoute>
   );
 }

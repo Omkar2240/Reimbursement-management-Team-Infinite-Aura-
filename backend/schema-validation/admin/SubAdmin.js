@@ -1,5 +1,7 @@
 const { accessManagementType } = require('../../config/options');
 
+const allowedSubAdminRoles = ['ADMIN', 'MANAGER', 'EMPLOYEE'];
+
 const accessManagement = {
   accessManagement: {
     in: ['body'],
@@ -72,6 +74,15 @@ const createAdmin = {
       errorMessage: 'Email must be string',
     },
   },
+  role: {
+    in: ['body'],
+    trim: true,
+    optional: true,
+    isIn: {
+      options: [allowedSubAdminRoles],
+      errorMessage: `Role value must be ${allowedSubAdminRoles.join(', ')}`,
+    },
+  },
   mobileNumber: {
     in: ['body'],
     trim: true,
@@ -113,6 +124,16 @@ const updateAdmin = {
   ...accessManagement,
 };
 
+const updateStatus = {
+  is_active: {
+    in: ['body'],
+    optional: true,
+    isBoolean: {
+      errorMessage: 'is_active must be boolean',
+    },
+  },
+};
+
 const changePassword = {
   password: {
     in: ['body'],
@@ -136,5 +157,6 @@ const changePassword = {
 module.exports = {
   createAdmin,
   updateAdmin,
+  updateStatus,
   changePassword,
 };

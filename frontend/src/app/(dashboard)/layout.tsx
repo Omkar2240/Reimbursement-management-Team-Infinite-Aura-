@@ -4,13 +4,8 @@ import React from "react"
 import Sidebar from "@/components/layout/sidebar"
 import Topbar from "@/components/layout/topbar"
 import ProtectedRoute from "@/components/layout/protected-route"
-import FirstLoginSetupModal from "@/features/auth/components/first-login-setup-modal"
-import { useAuth } from "@/providers/auth-provider"
 
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
-  const { user } = useAuth()
-  const showFirstLoginSetup = !user?.country || !user?.currency_code
-
   return (
     <ProtectedRoute>
       <div className="flex h-screen bg-white dark:bg-zinc-950">
@@ -27,7 +22,6 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
           </div>
         </main>
       </div>
-      <FirstLoginSetupModal isOpen={showFirstLoginSetup} userName={user?.name} />
       </div>
     </ProtectedRoute>
   )
