@@ -8,6 +8,14 @@ import {
 } from '@/schemas/auth.schema';
 
 const USER_BASE_URL = '/admin/user';
+const PUBLIC_USER_BASE_URL = '/user';
+
+const isFallbackEligible = (error: unknown): boolean => {
+  if (!error || typeof error !== 'object') return false;
+  if (!('statusCode' in error)) return false;
+  const statusCode = (error as { statusCode?: number }).statusCode;
+  return statusCode === 400 || statusCode === 401 || statusCode === 404;
+};
 
 export type AuthUser = {
   id: number;
@@ -39,7 +47,14 @@ export type ApiMessageResponse<T = unknown> = {
 };
 
 export const postLogin = async (payload: LoginFormValues): Promise<LoginResponse> => {
-  return await apiClient.post(`${USER_BASE_URL}/login`, payload);
+  try {
+    return await apiClient.post(`${USER_BASE_URL}/login`, payload);
+  } catch (error) {
+    if (isFallbackEligible(error)) {
+      return await apiClient.post(`${PUBLIC_USER_BASE_URL}/login`, payload);
+    }
+    throw error;
+  }
 };
 
 export const postSignup = async (payload: SignupFormValues): Promise<ApiMessageResponse> => {
@@ -47,7 +62,16 @@ export const postSignup = async (payload: SignupFormValues): Promise<ApiMessageR
 };
 
 export const getMe = async (): Promise<AuthUser> => {
-  const response = await apiClient.get<{ data?: AuthUser } | AuthUser>(`${USER_BASE_URL}`);
+  let response: { data?: AuthUser } | AuthUser;
+  try {
+    response = await apiClient.get<{ data?: AuthUser } | AuthUser>(`${USER_BASE_URL}`);
+  } catch (error) {
+    if (isFallbackEligible(error)) {
+      response = await apiClient.get<{ data?: AuthUser } | AuthUser>(`${PUBLIC_USER_BASE_URL}`);
+    } else {
+      throw error;
+    }
+  }
   const normalized = response && typeof response === 'object' && 'data' in response && response.data
     ? response.data
     : (response as AuthUser);

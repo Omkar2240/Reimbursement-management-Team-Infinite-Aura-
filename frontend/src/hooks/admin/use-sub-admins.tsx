@@ -10,7 +10,8 @@ import {
   putSubAdmin
 } from '@/services/sub-admin.service';
 import {
-  SubAdminFormValues,
+  CreateSubAdminFormValues,
+  UpdateSubAdminFormValues,
   UpdateSubAdminStatusFormValues
 } from '@/schemas/admin.schema';
 import { toast } from 'sonner';
@@ -33,7 +34,7 @@ export const useSubAdmin = (id: string) => {
 export const useCreateSubAdmin = () => {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: (data: SubAdminFormValues) => postSubAdmin(data),
+    mutationFn: (data: CreateSubAdminFormValues) => postSubAdmin(data),
     onSuccess: async () => {
       await queryClient.invalidateQueries({ queryKey: ['sub-admins'] });
       toast.success('User created successfully');
@@ -49,7 +50,7 @@ export const useUpdateSubAdmin = () => {
       data
     }: {
       id: string;
-      data: Partial<SubAdminFormValues>;
+      data: Partial<UpdateSubAdminFormValues>;
     }) => putSubAdmin(id, data),
     onSuccess: async () => {
       await queryClient.invalidateQueries({ queryKey: ['sub-admins'] });

@@ -1,6 +1,6 @@
 "use client"
 
-import React, { useEffect } from "react"
+import React, { useEffect, useState } from "react"
 import { useRouter } from "next/navigation"
 import { useAuth } from "@/providers/auth-provider"
 import { Loader2 } from "lucide-react"
@@ -13,8 +13,14 @@ interface ProtectedRouteProps {
 export default function ProtectedRoute({ children, allowedRoles }: ProtectedRouteProps) {
   const { user, isLoading, isError } = useAuth()
   const router = useRouter()
+  const [mounted, setMounted] = useState(false)
 
   useEffect(() => {
+    setMounted(true)
+  }, [])
+
+  useEffect(() => {
+    if (!mounted) return
     // If not loading and no user (or auth error), bounce to login
     if (!isLoading && (!user || isError)) {
       router.replace("/login")
@@ -33,7 +39,15 @@ export default function ProtectedRoute({ children, allowedRoles }: ProtectedRout
           }
         }
       }
-  }, [user, isLoading, isError, router, allowedRoles])
+  }, [mounted, user, isLoading, isError, router, allowedRoles])
+
+  if (!mounted) {
+    return (
+      <div className="flex h-screen w-full items-center justify-center bg-white dark:bg-zinc-950">
+        <Loader2 className="h-8 w-8 animate-spin text-zinc-400" />
+      </div>
+    )
+  }
 
   // Show a blank or loading state while fetching auth to prevent unauthorized flashing
   if (isLoading) {

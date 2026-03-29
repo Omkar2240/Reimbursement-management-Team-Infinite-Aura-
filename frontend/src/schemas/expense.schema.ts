@@ -14,8 +14,9 @@ export const expenseSchema = z.object({
 export type ExpenseFormValues = z.infer<typeof expenseSchema>
 
 export type Expense = ExpenseFormValues & {
-  id: string
+  id: string | number
   status: "pending" | "approved" | "rejected"
-  userId: string
+  userId: string | number
   createdAt: string
+  approvalStep?: number
 }

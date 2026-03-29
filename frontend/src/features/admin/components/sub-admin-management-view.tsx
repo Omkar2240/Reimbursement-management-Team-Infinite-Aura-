@@ -23,8 +23,10 @@ import {
   SelectValue
 } from "@/components/ui/select"
 import {
-  subAdminFormSchema,
-  SubAdminFormValues
+  createSubAdminFormSchema,
+  updateSubAdminFormSchema,
+  CreateSubAdminFormValues,
+  UpdateSubAdminFormValues
 } from "@/schemas/admin.schema"
 import {
   useAssignManager,
@@ -65,8 +67,10 @@ export default function SubAdminManagementView() {
   const rows = useMemo<SubAdminRecord[]>(() => {
     if (Array.isArray(data)) return data
     if (Array.isArray(data?.items)) return data.items
+    if (Array.isArray(data?.rows)) return data.rows
     if (Array.isArray(data?.data)) return data.data
     if (Array.isArray(data?.data?.rows)) return data.data.rows
+    if (Array.isArray(data?.data?.data?.rows)) return data.data.data.rows
     return []
   }, [data])
 
@@ -74,8 +78,21 @@ export default function SubAdminManagementView() {
   const employees = rows.filter((row) => (row.role || "").toUpperCase() === "EMPLOYEE")
   const managerTeam = Array.isArray(teamData?.data) ? teamData.data : []
 
-  const createForm = useForm<SubAdminFormValues>({
-    resolver: zodResolver(subAdminFormSchema),
+  const createForm = useForm<CreateSubAdminFormValues>({
+    resolver: zodResolver(createSubAdminFormSchema),
+    defaultValues: {
+      firstName: "",
+      lastName: "",
+      email: "",
+      mobileNumber: "",
+      password: "",
+      role: "EMPLOYEE",
+      is_active: true
+    }
+  })
+
+  const editForm = useForm<UpdateSubAdminFormValues>({
+    resolver: zodResolver(updateSubAdminFormSchema),
     defaultValues: {
       firstName: "",
       lastName: "",
@@ -86,19 +103,7 @@ export default function SubAdminManagementView() {
     }
   })
 
-  const editForm = useForm<SubAdminFormValues>({
-    resolver: zodResolver(subAdminFormSchema),
-    defaultValues: {
-      firstName: "",
-      lastName: "",
-      email: "",
-      mobileNumber: "",
-      role: "EMPLOYEE",
-      is_active: true
-    }
-  })
-
-  const onCreate = (values: SubAdminFormValues) => {
+  const onCreate = (values: CreateSubAdminFormValues) => {
     createMutation.mutate(values, {
       onSuccess: () => {
         createForm.reset({
@@ -106,6 +111,7 @@ export default function SubAdminManagementView() {
           lastName: "",
           email: "",
           mobileNumber: "",
+          password: "",
           role: "EMPLOYEE",
           is_active: true
         })
@@ -120,12 +126,12 @@ export default function SubAdminManagementView() {
       lastName: row.lastName || "",
       email: row.email,
       mobileNumber: row.mobileNumber || "",
-      role: (row.role?.toUpperCase() as SubAdminFormValues["role"]) || "EMPLOYEE",
+      role: (row.role?.toUpperCase() as UpdateSubAdminFormValues["role"]) || "EMPLOYEE",
       is_active: row.is_active ?? row.status === "active"
     })
   }
 
-  const onEdit = (values: SubAdminFormValues) => {
+  const onEdit = (values: UpdateSubAdminFormValues) => {
     if (!editingId) return
     updateMutation.mutate(
       {
@@ -201,6 +207,24 @@ export default function SubAdminManagementView() {
                     <FormLabel>Mobile Number</FormLabel>
                     <FormControl>
                       <Input placeholder="9999999999" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={createForm.control}
+                name="password"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Password</FormLabel>
+                    <FormControl>
+                      <Input
+                        type="password"
+                        autoComplete="new-password"
+                        placeholder="Enter temporary password (min 8 chars)"
+                        {...field}
+                      />
                     </FormControl>
                     <FormMessage />
                   </FormItem>

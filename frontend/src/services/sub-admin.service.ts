@@ -1,6 +1,7 @@
 import apiClient from '@/config/api.config';
 import {
-  SubAdminFormValues,
+  CreateSubAdminFormValues,
+  UpdateSubAdminFormValues,
   UpdateSubAdminStatusFormValues
 } from '@/schemas/admin.schema';
 
@@ -29,12 +30,13 @@ export const getSubAdmins = async (): Promise<SubAdminDto[]> => {
   return await apiClient.get(SUB_ADMIN_BASE_URL);
 };
 
-export const postSubAdmin = async (payload: SubAdminFormValues): Promise<SubAdminDto> => {
+export const postSubAdmin = async (payload: CreateSubAdminFormValues): Promise<SubAdminDto> => {
   return await apiClient.post(SUB_ADMIN_BASE_URL, {
     firstName: payload.firstName,
     lastName: payload.lastName || '',
     email: payload.email,
     mobileNumber: payload.mobileNumber,
+    password: payload.password,
     role: payload.role,
   });
 };
@@ -45,7 +47,7 @@ export const getSubAdminById = async (id: string): Promise<SubAdminDto> => {
 
 export const putSubAdmin = async (
   id: string,
-  payload: Partial<SubAdminFormValues>
+  payload: Partial<UpdateSubAdminFormValues>
 ): Promise<SubAdminDto> => {
   return await apiClient.put(`${SUB_ADMIN_BASE_URL}/${id}`, payload);
 };

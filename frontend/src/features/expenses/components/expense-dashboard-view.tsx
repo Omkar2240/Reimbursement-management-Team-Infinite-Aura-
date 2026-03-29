@@ -78,6 +78,9 @@ export default function ExpenseDashboardView() {
     return []
   }, [teamExpenseData])
 
+  const getExpenseId = (expense: Expense): string =>
+    String(expense?.id ?? "")
+
   const onCreateExpense = async () => {
     const parsed = expenseSchema.safeParse(form)
     if (!parsed.success) return
@@ -162,29 +165,37 @@ export default function ExpenseDashboardView() {
                       {exp.currency} {Number(exp.amount).toFixed(2)} | Step {exp.approvalStep}
                     </p>
                   </div>
-                  <div className="flex gap-2">
-                    <Button
-                      size="sm"
-                      disabled={approveExpense.isPending || rejectExpense.isPending}
-                      onClick={() => approveExpense.mutate(String(exp.id))}
-                    >
-                      Approve
-                    </Button>
-                    <Button
-                      size="sm"
-                      variant="destructive"
-                      disabled={approveExpense.isPending || rejectExpense.isPending}
-                      onClick={() => rejectExpense.mutate({ id: String(exp.id), reason: "Rejected by approver" })}
-                    >
-                      Reject
-                    </Button>
-                    <Button
-                      size="sm"
-                      variant="outline"
-                      onClick={() => setSelectedExpenseId(String(exp.id))}
-                    >
-                      View Chain
-                    </Button>
+                      <div className="flex gap-2">
+                        <Button
+                          size="sm"
+                          disabled={approveExpense.isPending || rejectExpense.isPending}
+                          onClick={() => {
+                            const id = getExpenseId(exp)
+                            if (!id) return
+                            approveExpense.mutate(id)
+                          }}
+                        >
+                          Approve
+                        </Button>
+                        <Button
+                          size="sm"
+                          variant="destructive"
+                          disabled={approveExpense.isPending || rejectExpense.isPending}
+                          onClick={() => {
+                            const id = getExpenseId(exp)
+                            if (!id) return
+                            rejectExpense.mutate({ id, reason: "Rejected by approver" })
+                          }}
+                        >
+                          Reject
+                        </Button>
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          onClick={() => setSelectedExpenseId(getExpenseId(exp))}
+                        >
+                          View Chain
+                        </Button>
                   </div>
                 </div>
               ))
@@ -232,7 +243,7 @@ export default function ExpenseDashboardView() {
                           <Button
                             variant="outline"
                             size="sm"
-                            onClick={() => setSelectedExpenseId(String(expense.id))}
+                            onClick={() => setSelectedExpenseId(getExpenseId(expense))}
                           >
                             Chain
                           </Button>
@@ -240,8 +251,10 @@ export default function ExpenseDashboardView() {
                             variant="outline"
                             size="sm"
                             onClick={async () => {
+                              const id = getExpenseId(expense)
+                              if (!id) return
                               const result = await convertExpense.mutateAsync({
-                                id: String(expense.id),
+                                id,
                                 toCurrency: conversionCurrency
                               })
                               setConversionResult(result?.data || result)
@@ -302,7 +315,7 @@ export default function ExpenseDashboardView() {
           <Input
             placeholder="Expense ID"
             value={receiptExpenseId}
-            onChange={(e) => setReceiptExpenseId(e.target.value)}
+            onChange={(e) => setReceiptExpenseId(e.target.value.trim())}
           />
           <Input
             type="file"

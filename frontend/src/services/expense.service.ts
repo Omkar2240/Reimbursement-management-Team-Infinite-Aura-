@@ -30,7 +30,8 @@ export const getExpenses = async (): Promise<Expense[]> => {
 };
 
 export const getExpenseById = async (id: string): Promise<Expense> => {
-  return await apiClient.get(`${BASE_URLS}/${id}`);
+  const expenseId = String(id).trim();
+  return await apiClient.get(`${BASE_URLS}/${expenseId}`);
 };
 
 export const createExpense = async (payload: ExpenseFormValues): Promise<Expense> => {
@@ -38,11 +39,13 @@ export const createExpense = async (payload: ExpenseFormValues): Promise<Expense
 };
 
 export const approveExpense = async (id: string): Promise<Expense> => {
-  return await apiClient.post(`${BASE_URLS}/${id}/approve`);
+  const expenseId = String(id).trim();
+  return await apiClient.post(`${BASE_URLS}/${expenseId}/approve`);
 };
 
 export const rejectExpense = async (id: string, reason?: string): Promise<Expense> => {
-  return await apiClient.patch(`${BASE_URLS}/${id}/reject`, { reason });
+  const expenseId = String(id).trim();
+  return await apiClient.patch(`${BASE_URLS}/${expenseId}/reject`, { reason });
 };
 
 export const getPendingApprovals = async (): Promise<Expense[]> => {
@@ -56,19 +59,22 @@ export const getTeamExpenses = async (): Promise<Expense[]> => {
 export const getExpenseApprovalChain = async (
   id: string
 ): Promise<{ expense: Expense; rules: ExpenseRule[] }> => {
-  return await apiClient.get(`${BASE_URLS}/${id}/approval-chain`);
+  const expenseId = String(id).trim();
+  return await apiClient.get(`${BASE_URLS}/${expenseId}/approval-chain`);
 };
 
 export const convertExpense = async (id: string, toCurrency: string): Promise<ConversionResult> => {
-  return await apiClient.get(`${BASE_URLS}/${id}/convert`, {
+  const expenseId = String(id).trim();
+  return await apiClient.get(`${BASE_URLS}/${expenseId}/convert`, {
     params: { toCurrency }
   });
 };
 
 export const uploadExpenseReceipt = async (id: string, file: File): Promise<ReceiptUploadResult> => {
+  const expenseId = String(id).trim();
   const formData = new FormData();
   formData.append('receipt', file);
-  return await apiClient.post(`${BASE_URLS}/${id}/receipt`, formData, {
+  return await apiClient.post(`${BASE_URLS}/${expenseId}/receipt`, formData, {
     headers: {
       'Content-Type': 'multipart/form-data'
     }

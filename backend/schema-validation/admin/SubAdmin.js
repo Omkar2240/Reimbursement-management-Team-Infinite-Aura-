@@ -92,6 +92,19 @@ const createAdmin = {
       errorMessage: 'Mobile number must be string',
     },
   },
+  password: {
+    in: ['body'],
+    trim: true,
+    notEmpty: true,
+    errorMessage: 'Password cannot be empty',
+    isString: {
+      errorMessage: 'Password must be string',
+    },
+    isLength: {
+      options: { min: 8 },
+      errorMessage: 'Password must be at least 8 characters',
+    },
+  },
   ...accessManagement,
 };
 
