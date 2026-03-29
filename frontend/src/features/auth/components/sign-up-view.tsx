@@ -1,18 +1,15 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState } from "react"
 import Link from "next/link"
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { Loader2 } from "lucide-react"
-import { toast } from "sonner"
 
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { signupSchema, type SignupFormValues } from "@/schemas/auth.schema"
 import { useSignup } from "@/hooks/auth/use-auth"
-import { useCountries } from "@/hooks/external/use-countries"
-import { SearchableDropdown } from "@/components/ui/searchable-dropdown"
 import {
   Form,
   FormControl,
@@ -24,36 +21,21 @@ import {
 
 export default function SignUpViewPage() {
   const [showPassword, setShowPassword] = useState(false)
-  const { data: countryData } = useCountries()
-  const countries = countryData?.countries || []
-  const currenciesList = countryData?.currencies || []
 
   const signupMutation = useSignup()
 
   const form = useForm<SignupFormValues>({
     resolver: zodResolver(signupSchema as any),
     defaultValues: {
-      name: "",
+      firstName: "",
+      lastName: "",
       email: "",
       password: "",
-      company_name: "",
-      country: "",
-      currency_code: "",
+      countryCode: "+91",
+      mobileNumber: "",
+      referralCode: "",
     },
   })
-
-
-
-  // Autofill currency when country changes
-  const selectedCountry = form.watch("country")
-  useEffect(() => {
-    if (selectedCountry) {
-      const countryMatch = countries.find(c => c.name === selectedCountry)
-      if (countryMatch && countryMatch.currencies.length > 0 && !form.getValues("currency_code")) {
-        form.setValue("currency_code", countryMatch.currencies[0])
-      }
-    }
-  }, [selectedCountry, countries, form])
 
   const onSubmit = (data: SignupFormValues) => {
     signupMutation.mutate(data)
@@ -79,12 +61,12 @@ export default function SignUpViewPage() {
           <div className="grid grid-cols-2 gap-4">
             <FormField
               control={form.control}
-              name="name"
+              name="firstName"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Full Name</FormLabel>
+                  <FormLabel>First Name</FormLabel>
                   <FormControl>
-                    <Input placeholder="John Doe" {...field} />
+                    <Input placeholder="John" {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -93,12 +75,12 @@ export default function SignUpViewPage() {
 
             <FormField
               control={form.control}
-              name="company_name"
+              name="lastName"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Company Name</FormLabel>
+                  <FormLabel>Last Name</FormLabel>
                   <FormControl>
-                    <Input placeholder="Acme Inc." {...field} />
+                    <Input placeholder="Doe" {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -153,17 +135,13 @@ export default function SignUpViewPage() {
           <div className="grid grid-cols-2 gap-4">
             <FormField
               control={form.control}
-              name="country"
+              name="countryCode"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Country</FormLabel>
-                  <SearchableDropdown
-                    options={countries.map((c) => c.name)}
-                    value={field.value}
-                    onChange={field.onChange}
-                    placeholder="Search and select country"
-                    searchPlaceholder="Type a country name..."
-                  />
+                  <FormLabel>Country Code</FormLabel>
+                  <FormControl>
+                    <Input placeholder="+91" {...field} />
+                  </FormControl>
                   <FormMessage />
                 </FormItem>
               )}
@@ -171,23 +149,32 @@ export default function SignUpViewPage() {
 
             <FormField
               control={form.control}
-              name="currency_code"
+              name="mobileNumber"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Currency</FormLabel>
-                  <SearchableDropdown
-                    options={currenciesList}
-                    value={field.value}
-                    onChange={field.onChange}
-                    placeholder="Search currency"
-                    searchPlaceholder="Type a currency code..."
-                    disabled={currenciesList.length === 0}
-                  />
+                  <FormLabel>Mobile Number</FormLabel>
+                  <FormControl>
+                    <Input placeholder="9876543210" {...field} />
+                  </FormControl>
                   <FormMessage />
                 </FormItem>
               )}
             />
           </div>
+
+          <FormField
+            control={form.control}
+            name="referralCode"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Referral Code (optional)</FormLabel>
+                <FormControl>
+                  <Input placeholder="Enter referral code" {...field} value={field.value ?? ""} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
 
           <Button
             type="submit"
