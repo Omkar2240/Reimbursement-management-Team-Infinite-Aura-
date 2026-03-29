@@ -10,7 +10,7 @@ const {
   deleteAdmin,
   getAdmin,
   putUpdateAdmin,
-} = require('../../../../controllers/api/v1/admin/SubAdmin');
+} = require('../../../../controllers/api/v1/admin/Manager');
 
 const {
   requestValidator,
@@ -18,7 +18,7 @@ const {
 const {
   createAdmin,
   updateAdmin,
-} = require('../../../../schema-validation/admin/SubAdmin');
+} = require('../../../../schema-validation/admin/Manager');
 
 router.post('/', checkSchema(createAdmin), requestValidator, postCreateAdmin);
 router.get('/', getAdminListing);

@@ -56,5 +56,3 @@ exports.userAttributes = () => [
   'profilePicture',
   'googleId',
 ];
-
-

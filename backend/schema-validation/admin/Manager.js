@@ -12,7 +12,14 @@ const accessManagement = {
     notEmpty: false,
     errorMessage: 'Category cannot be empty',
     isIn: {
-      options: [Object.values(accessManagementType).join(', ')],
+      options: [Object.values(accessManagementType)],
+      errorMessage: `Category value must be ${Object.values(accessManagementType).join(', ')}`,
+    },
+    custom: {
+      options: (value) =>
+        Object.values(accessManagementType).includes(
+          String(value).toLowerCase()
+        ),
       errorMessage: `Category value must be ${Object.values(accessManagementType).join(', ')}`,
     },
     isString: {

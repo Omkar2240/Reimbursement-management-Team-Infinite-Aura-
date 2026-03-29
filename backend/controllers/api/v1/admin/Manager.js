@@ -4,7 +4,7 @@ const {
   checkAndUpdateAdmin,
   checkAndPatchAdminStatus,
   checkAndGetAdmin,
-} = require('../../../../models/repositories/SubAdminRepository');
+} = require('../../../../models/repositories/ManagerRepository');
 const {
   resCode,
   genRes,

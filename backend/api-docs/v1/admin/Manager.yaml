@@ -1,10 +1,10 @@
 paths:
-  /admin/sub-admin:
+  /admin/manager:
     get:
       tags:
         - "Admin"
-      summary: "Retrieve a list of Sub-Admins"
-      description: "Fetch a paginated list of Sub-Admins with optional filters."
+      summary: "Retrieve a list of Managers"
+      description: "Fetch a paginated list of Managers with optional filters."
       operationId: "getAdmin"
       produces:
         - "application/json"
@@ -13,7 +13,7 @@ paths:
           name: "search"
           schema:
             type: string
-          description: "Search term to filter Sub-Admins by name or email."
+          description: "Search term to filter Managers by name or email."
         - in: "query"
           name: "start"
           schema:
@@ -31,12 +31,12 @@ paths:
           schema:
             type: string
             enum: ['active', 'inactive']
-          description: "Filter Sub-Admins by status ('active' or 'inactive')."
+          description: "Filter Managers by status ('active' or 'inactive')."
       security:
         - bearerAuth: []
       responses:
         "200":
-          description: "List of Sub-Admins retrieved successfully."
+          description: "List of Managers retrieved successfully."
         "400":
           description: "Invalid request parameters."
         "500":
@@ -44,11 +44,11 @@ paths:
     post:
       tags:
         - "Admin"
-      summary: "Create a new Sub-Admin"
-      description: "Add a new Sub-Admin with the provided details."
+      summary: "Create a new Manager"
+      description: "Add a new Manager with the provided details."
       operationId: "createAdmin"
       requestBody:
-        description: "Payload containing Sub-Admin details."
+        description: "Payload containing Manager details."
         content:
           "application/json":
             schema:
@@ -61,17 +61,17 @@ paths:
         - bearerAuth: []
       responses:
         "200":
-          description: "Sub-Admin created successfully."
+          description: "Manager created successfully."
         "400":
           description: "Invalid request payload."
         "500":
           description: "Internal server error."
-  /admin/sub-admin/{id}:
+  /admin/manager/{id}:
     get:
       tags:
         - "Admin"
-      summary: "Retrieve Sub-Admin by ID"
-      description: "Fetch details of a specific Sub-Admin using their ID."
+      summary: "Retrieve Manager by ID"
+      description: "Fetch details of a specific Manager using their ID."
       operationId: "getAdminById"
       produces:
         - "application/json"
@@ -81,24 +81,24 @@ paths:
           schema:
             type: string
           required: true
-          description: "Unique identifier of the Sub-Admin."
+          description: "Unique identifier of the Manager."
       security:
         - bearerAuth: []
       responses:
         "200":
-          description: "Sub-Admin details retrieved successfully."
+          description: "Manager details retrieved successfully."
         "400":
-          description: "Invalid Sub-Admin ID."
+          description: "Invalid Manager ID."
         "500":
           description: "Internal server error."
     put:
       tags:
         - "Admin"
-      summary: "Update Sub-Admin details"
-      description: "Modify the details of an existing Sub-Admin."
+      summary: "Update Manager details"
+      description: "Modify the details of an existing Manager."
       operationId: "putUpdateAdmin"
       requestBody:
-        description: "Payload containing updated Sub-Admin details."
+        description: "Payload containing updated Manager details."
         content:
           "application/json":
             schema:
@@ -112,21 +112,21 @@ paths:
           schema:
             type: string
           required: true
-          description: "Unique identifier of the Sub-Admin."
+          description: "Unique identifier of the Manager."
       security:
         - bearerAuth: []
       responses:
         "200":
-          description: "Sub-Admin updated successfully."
+          description: "Manager updated successfully."
         "400":
-          description: "Invalid request payload or Sub-Admin ID."
+          description: "Invalid request payload or Manager ID."
         "500":
           description: "Internal server error."
     delete:
       tags:
         - "Admin"
-      summary: "Delete a Sub-Admin"
-      description: "Remove a Sub-Admin from the system using their ID."
+      summary: "Delete a Manager"
+      description: "Remove a Manager from the system using their ID."
       operationId: "deleteAdmin"
       produces:
         - "application/json"
@@ -136,21 +136,21 @@ paths:
           schema:
             type: string
           required: true
-          description: "Unique identifier of the Sub-Admin."
+          description: "Unique identifier of the Manager."
       security:
         - bearerAuth: []
       responses:
         "200":
-          description: "Sub-Admin deleted successfully."
+          description: "Manager deleted successfully."
         "400":
-          description: "Invalid Sub-Admin ID."
+          description: "Invalid Manager ID."
         "500":
           description: "Internal server error."
     patch:
       tags:
         - "Admin"
-      summary: "Update Sub-Admin status"
-      description: "Change the status of a Sub-Admin (e.g., active or inactive)."
+      summary: "Update Manager status"
+      description: "Change the status of a Manager (e.g., active or inactive)."
       operationId: "patchAdminStatus"
       produces:
         - "application/json"
@@ -160,14 +160,14 @@ paths:
           schema:
             type: string
           required: true
-          description: "Unique identifier of the Sub-Admin."
+          description: "Unique identifier of the Manager."
       security:
         - bearerAuth: []
       responses:
         "200":
-          description: "Sub-Admin status updated successfully."
+          description: "Manager status updated successfully."
         "400":
-          description: "Invalid Sub-Admin ID."
+          description: "Invalid Manager ID."
         "500":
           description: "Internal server error."
 
@@ -178,22 +178,22 @@ components:
       properties:
         firstName:
           type: string
-          description: "Enter the first name of the Sub-Admin."
+          description: "Enter the first name of the Manager."
         lastName:
           type: string
-          description: "Enter the last name of the Sub-Admin."
+          description: "Enter the last name of the Manager."
         email:
           type: string
-          description: "Enter the email address of the Sub-Admin."
+          description: "Enter the email address of the Manager."
         mobileNumber:
           type: string
-          description: "Enter the mobile number of the Sub-Admin."
+          description: "Enter the mobile number of the Manager."
         profilePicture:
           type: string
-          description: "Provide the URL of the Sub-Admin's profile picture."
+          description: "Provide the URL of the Manager's profile picture."
         password:
           type: string
-          description: "Set a password for the Sub-Admin."
+          description: "Set a password for the Manager."
         accessManagement:
           type: array
           items:
@@ -204,16 +204,16 @@ components:
                 description: "Specify the category of access."
               canView:
                 type: boolean
-                description: "Indicate if the Sub-Admin can view this category."
+                description: "Indicate if the Manager can view this category."
               canAdd:
                 type: boolean
-                description: "Indicate if the Sub-Admin can add to this category."
+                description: "Indicate if the Manager can add to this category."
               canEdit:
                 type: boolean
-                description: "Indicate if the Sub-Admin can edit this category."
+                description: "Indicate if the Manager can edit this category."
               canDelete:
                 type: boolean
-                description: "Indicate if the Sub-Admin can delete from this category."
+                description: "Indicate if the Manager can delete from this category."
       required:
         - firstName
         - lastName

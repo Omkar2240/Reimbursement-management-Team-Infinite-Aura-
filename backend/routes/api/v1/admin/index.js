@@ -3,7 +3,7 @@ const router = express.Router();
 const AuthHandler = require('../../../../models/helpers/AuthHelper');
 
 const UserRouter = require('./User');
-const SubAdminRouter = require('./SubAdmin');
+const ManagerRouter = require('./Manager');
 const ContactUsRouter = require('./ContactUs');
 const { usersRoles } = require('../../../../config/options');
 
@@ -15,6 +15,6 @@ router.use(
 
 router.use('/user', UserRouter);
 
-router.use('/sub-admin', SubAdminRouter);
+router.use('/manager', ManagerRouter);
 
 module.exports = router;
