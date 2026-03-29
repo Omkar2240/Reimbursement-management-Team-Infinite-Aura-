@@ -104,6 +104,14 @@ module.exports = (sequelize, DataTypes) => {
         type: DataTypes.INTEGER,
         allowNull: true,
       },
+      country: {
+        type: DataTypes.STRING,
+        allowNull: true,
+      },
+      currencyCode: {
+        type: DataTypes.STRING,
+        allowNull: true,
+      },
     },
     {
       timestamps: true,
@@ -158,6 +166,11 @@ module.exports = (sequelize, DataTypes) => {
     User.hasMany(models.AccessManagement, {
       foreignKey: 'userId',
       as: 'accessManagement',
+    });
+
+    User.belongsTo(models.Company, {
+      foreignKey: 'companyId',
+      as: 'company',
     });
 
     // No student-related associations in company/employee domain

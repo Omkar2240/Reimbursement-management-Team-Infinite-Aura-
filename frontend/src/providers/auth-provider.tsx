@@ -1,14 +1,15 @@
 'use client';
 
-import { createContext, useContext, ReactNode } from 'react';
+import { createContext, useContext, ReactNode, useEffect, useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { getMe } from '@/services/auth.service';
 import storage from '@/lib/storage';
 import queryClient from '@/lib/react-query';
 import { useRouter } from 'next/navigation';
+import type { AuthUser } from '@/services/auth.service';
 
 type AuthContextType = {
-  user: any | null;
+  user: AuthUser | null;
   isLoading: boolean;
   isError: boolean;
   logout: () => void;
@@ -18,6 +19,13 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export function AuthProvider({ children }: { children: ReactNode }) {
   const router = useRouter();
+  const [isHydrated, setIsHydrated] = useState(false);
+
+  useEffect(() => {
+    setIsHydrated(true);
+  }, []);
+
+  const hasToken = isHydrated && Boolean(storage.getToken());
 
   const {
     data: user,
@@ -26,7 +34,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   } = useQuery({
     queryKey: ['profile'],
     queryFn: getMe,
-    retry: false
+    retry: false,
+    enabled: hasToken,
   });
 
   const logout = () => {
@@ -40,7 +49,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     router.replace('/login');
   };
   return (
-    <AuthContext.Provider value={{ user, isLoading, isError, logout }}>
+    <AuthContext.Provider
+      value={{
+        user: hasToken ? user || null : null,
+        isLoading: !isHydrated || (hasToken ? isLoading : false),
+        isError: hasToken ? isError : false,
+        logout,
+      }}
+    >
       {children}
     </AuthContext.Provider>
   );

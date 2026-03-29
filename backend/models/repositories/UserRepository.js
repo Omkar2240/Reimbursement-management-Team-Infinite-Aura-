@@ -1,5 +1,5 @@
 const sequelize = require('sequelize');
-const { User, AccessManagement } = require('..');
+const { User, AccessManagement, Company } = require('..');
 const {
   defaultStatus,
   errorMessage,
@@ -21,6 +21,14 @@ const {
 const AuthHelper = require('../helpers/AuthHelper');
 const chalk = require('chalk');
 const { Op } = sequelize;
+
+const normalizeEmail = (email) =>
+  typeof email === 'string' ? email.trim().toLowerCase() : email;
+const emailWhere = (normalizedEmail) =>
+  sequelize.where(
+    sequelize.fn('lower', sequelize.fn('trim', sequelize.col('email'))),
+    normalizedEmail
+  );
 
 const findByCondition = async (conditions, options) =>
   await User.findOne({ where: conditions, ...options });
@@ -69,9 +77,12 @@ const getUsersAndCount = async ({
         'firstName',
         'lastName',
         'email',
+        'role',
         'profilePicture',
         'countryCode',
         'mobileNumber',
+        'parentId',
+        'companyId',
         'status',
         'createdAt',
         'lastSignInAt',
@@ -108,6 +119,9 @@ const getUser = async (id) => {
         'profilePicture',
         'status',
         'role',
+        'companyId',
+        'country',
+        'currencyCode',
         'createdAt',
         'lastSignInAt',
       ],
@@ -166,9 +180,10 @@ const checkAndLoginWithPasswordWithRole = async (
   ipAddress = null
 ) => {
   try {
+    const normalizedEmail = normalizeEmail(body.email);
     const existingUser = await User.findOne({
       where: {
-        email: body.email,
+        [Op.and]: [emailWhere(normalizedEmail)],
         role,
         status: { [Op.ne]: defaultStatus.DELETED },
       },
@@ -289,10 +304,12 @@ const checkAndSignupWithRole = async (
   ipAddress = null
 ) => {
   try {
+    const normalizedEmail = normalizeEmail(body.email);
+    body.email = normalizedEmail;
     const query = {
       status: { [Op.ne]: defaultStatus.DELETED },
       [Op.or]: [
-        body.email && { email: body.email },
+        body.email && emailWhere(normalizedEmail),
         body.mobileNumber && {
           mobileNumber: body.mobileNumber,
           countryCode: body.countryCode,
@@ -327,6 +344,20 @@ const checkAndSignupWithRole = async (
           : new Date(Date.now() + 15 * 60 * 1000),
         isEmailVerified: body.googleId ? true : false,
       });
+
+      // For Admin signups, auto-create a company and attach it to the admin.
+      if (data.role === usersRoles.ADMIN && !data.companyId) {
+        const companyName = `${data.firstName || 'Admin'} Company ${data.id}`;
+        const company = await Company.create({
+          name: companyName,
+          country: body.country || null,
+          currencyCode:
+            body.currencyCode || process.env.DEFAULT_CURRENCY_CODE || 'USD',
+          adminUserId: data.id,
+        });
+        data.companyId = company.id;
+        await data.save();
+      }
 
       if (body.email && !body.googleId) {
         const payload = {
@@ -450,9 +481,10 @@ const checkAndSignupWithRole = async (
 const checkDuplicate = async (body, existingUser) => {
   try {
     const conditions = [];
+    const normalizedEmail = normalizeEmail(body.email);
 
-    if (body.email) {
-      conditions.push({ email: body.email });
+    if (normalizedEmail) {
+      conditions.push(emailWhere(normalizedEmail));
     }
     if (body.mobileNumber) {
       conditions.push({
@@ -480,6 +512,7 @@ const checkDuplicate = async (body, existingUser) => {
 const createUser = async (data) => {
   try {
     const username = await generateUniqueUsername();
+    const normalizedEmail = normalizeEmail(data.email);
     const payload = {
       userName: username,
       password: data.password,
@@ -490,8 +523,10 @@ const createUser = async (data) => {
       mobileNumber: data.mobileNumber,
       role: data.role,
       profilePicture: data.profilePicture || null,
-      email: data.email,
+      email: normalizedEmail,
       companyId: data.companyId || null,
+      country: data.country || null,
+      currencyCode: data.currencyCode || null,
       tempOtp: data.tempOtp,
       tempOtpExpiresAt: data.tempOtpExpiresAt,
       googleId: data.googleId || null,
@@ -510,14 +545,21 @@ const createUser = async (data) => {
 };
 
 const checkAndCreate = async (body) => {
+  const normalizedEmail = normalizeEmail(body.email);
+  body.email = normalizedEmail;
+  const mobileCondition = body.mobileNumber
+    ? body.countryCode
+      ? {
+          mobileNumber: body.mobileNumber,
+          countryCode: body.countryCode,
+        }
+      : { mobileNumber: body.mobileNumber }
+    : null;
   const query = {
     status: { [Op.ne]: defaultStatus.DELETED },
     [Op.or]: [
-      body.email && { email: body.email },
-      body.mobileNumber && {
-        mobileNumber: body.mobileNumber,
-        countryCode: body.countryCode,
-      },
+      body.email && emailWhere(normalizedEmail),
+      mobileCondition,
     ].filter(Boolean),
   };
 
@@ -561,11 +603,13 @@ const checkAndUpdateUser = async (query, data) => {
     if (!existingUser) {
       return { success: false, message: errorMessage.DOES_NOT_EXIST('User') };
     }
-    existingUser.firstName = data.firstName;
-    existingUser.lastName = data.lastName;
-    existingUser.email = data.email;
-    existingUser.mobileNumber = data.mobileNumber;
-    existingUser.countryCode = data.countryCode;
+    existingUser.firstName = data.firstName || existingUser.firstName;
+    existingUser.lastName = data.lastName || existingUser.lastName;
+    existingUser.email = normalizeEmail(data.email) || existingUser.email;
+    existingUser.mobileNumber = data.mobileNumber || existingUser.mobileNumber;
+    existingUser.countryCode = data.countryCode || existingUser.countryCode;
+    existingUser.country = data.country || existingUser.country;
+    existingUser.currencyCode = data.currencyCode || existingUser.currencyCode;
     existingUser.profilePicture = data.profilePicture;
     existingUser.password = data.password || existingUser.password;
 
@@ -650,8 +694,9 @@ const generateAndSendOtp = async (
 
 const sendPasswordResetOtp = async (data) => {
   try {
+    const normalizedEmail = normalizeEmail(data.email);
     const query = {
-      email: data.email,
+      [Op.and]: [emailWhere(normalizedEmail)],
       status: { [Op.ne]: defaultStatus.DELETED },
     };
     const existingUser = await User.findOne({
@@ -698,8 +743,9 @@ const sendPasswordResetOtp = async (data) => {
 
 const checkOtpAndUpdatePassword = async (body) => {
   try {
+    const normalizedEmail = normalizeEmail(body.email);
     const query = {
-      email: body.email,
+      [Op.and]: [emailWhere(normalizedEmail)],
       status: { [Op.ne]: defaultStatus.DELETED },
       tempOtp: body.tempOtp,
       tempOtpExpiresAt: { [Op.gte]: new Date() },
@@ -731,8 +777,9 @@ const checkOtpAndUpdatePassword = async (body) => {
 
 const checkUserAndLoginWithOtp = async (body) => {
   try {
+    const normalizedEmail = normalizeEmail(body.email);
     const query = {
-      email: body.email,
+      [Op.and]: [emailWhere(normalizedEmail)],
       status: { [Op.ne]: defaultStatus.DELETED },
     };
 
@@ -785,11 +832,12 @@ const checkUserAndLoginWithOtp = async (body) => {
 
 const checkAndVerifyOtp = async (data) => {
   try {
-    const { email, otp } = data;
+    const { otp } = data;
+    const email = normalizeEmail(data.email);
 
     const user = await User.findOne({
       where: {
-        email,
+        [Op.and]: [emailWhere(email)],
         status: { [Op.ne]: defaultStatus.DELETED },
         tempOtp: otp,
         tempOtpExpiresAt: { [Op.gte]: new Date() },

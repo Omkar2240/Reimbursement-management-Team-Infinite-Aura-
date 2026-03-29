@@ -63,7 +63,7 @@ exports.signup = async (req, res) => {
 
     const { success, message } = await UserRepository.checkAndSignupWithRole(
       req.body,
-      usersRoles.getNonAdminArray()
+      [usersRoles.ADMIN]
     );
     if (!success) {
       return res

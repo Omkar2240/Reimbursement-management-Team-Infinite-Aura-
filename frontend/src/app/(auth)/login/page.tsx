@@ -4,7 +4,7 @@ import AuthLayout from "@/components/layout/auth-layout"
 
 export const metadata: Metadata = {
   title: "Authentication | Sign In",
-  description: "Sign in page for FlowReimburse.",
+  description: "Sign in page for FlowExpense.",
 }
 
 export default async function Page() {
