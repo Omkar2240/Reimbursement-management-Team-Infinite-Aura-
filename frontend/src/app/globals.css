@@ -1,3 +1,4 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Poppins:wght@400;500;600;700;800&display=swap');
 @import "tailwindcss";
 @import "tw-animate-css";
 @import "shadcn/tailwind.css";
@@ -214,3 +215,510 @@
   --sidebar-border: oklch(1 0 0 / 10%);
   --sidebar-ring: oklch(0.556 0 0);
 }
+
+:root {
+  --background: hsl(230 30% 97%);
+  --foreground: hsl(230 25% 18%);
+  --card: hsl(0 0% 100%);
+  --card-foreground: hsl(230 25% 18%);
+  --popover: hsl(0 0% 100%);
+  --popover-foreground: hsl(230 25% 18%);
+  --primary: hsl(250 60% 65%);
+  --primary-foreground: hsl(0 0% 100%);
+  --secondary: hsl(160 40% 88%);
+  --secondary-foreground: hsl(160 40% 25%);
+  --muted: hsl(230 20% 93%);
+  --muted-foreground: hsl(230 15% 50%);
+  --accent: hsl(200 60% 85%);
+  --accent-foreground: hsl(200 60% 25%);
+  --destructive: hsl(0 70% 60%);
+  --destructive-foreground: hsl(0 0% 100%);
+  --border: hsl(230 20% 90%);
+  --input: hsl(230 20% 90%);
+  --ring: hsl(250 60% 65%);
+  --radius: 0.75rem;
+
+  --lavender: hsl(250 70% 85%);
+  --lavender-deep: hsl(250 60% 65%);
+  --mint: hsl(160 50% 85%);
+  --mint-deep: hsl(160 45% 55%);
+  --baby-blue: hsl(200 70% 85%);
+  --baby-blue-deep: hsl(200 60% 55%);
+  --peach: hsl(20 80% 88%);
+  --peach-deep: hsl(20 70% 60%);
+}
+
+.dark {
+  --background: hsl(230 25% 10%);
+  --foreground: hsl(230 15% 90%);
+  --card: hsl(230 25% 14%);
+  --card-foreground: hsl(230 15% 90%);
+  --popover: hsl(230 25% 14%);
+  --popover-foreground: hsl(230 15% 90%);
+  --primary: hsl(250 60% 70%);
+  --primary-foreground: hsl(0 0% 100%);
+  --secondary: hsl(160 30% 20%);
+  --secondary-foreground: hsl(160 40% 85%);
+  --muted: hsl(230 20% 18%);
+  --muted-foreground: hsl(230 15% 60%);
+  --accent: hsl(200 40% 22%);
+  --accent-foreground: hsl(200 60% 85%);
+  --destructive: hsl(0 62.8% 30.6%);
+  --destructive-foreground: hsl(210 40% 98%);
+  --border: hsl(230 20% 20%);
+  --input: hsl(230 20% 20%);
+  --ring: hsl(250 60% 70%);
+
+  --lavender: hsl(250 40% 30%);
+  --lavender-deep: hsl(250 50% 60%);
+  --mint: hsl(160 30% 25%);
+  --mint-deep: hsl(160 40% 50%);
+  --baby-blue: hsl(200 40% 28%);
+  --baby-blue-deep: hsl(200 50% 55%);
+  --peach: hsl(20 40% 25%);
+  --peach-deep: hsl(20 60% 55%);
+}
+
+@theme inline {
+  --font-sans: "Inter", system-ui, sans-serif;
+  --font-display: "Poppins", "Inter", system-ui, sans-serif;
+
+  --color-lavender: var(--lavender);
+  --color-lavender-deep: var(--lavender-deep);
+  --color-mint: var(--mint);
+  --color-mint-deep: var(--mint-deep);
+  --color-baby-blue: var(--baby-blue);
+  --color-baby-blue-deep: var(--baby-blue-deep);
+  --color-peach: var(--peach);
+  --color-peach-deep: var(--peach-deep);
+}
+
+@layer components {
+  .glass-card {
+    background: hsl(0 0% 100% / 0.6);
+    border: 1px solid hsl(0 0% 100% / 0.3);
+    @apply rounded-2xl backdrop-blur-xl;
+    box-shadow: 0 10px 30px hsl(250 40% 45% / 0.18);
+  }
+
+  .dark .glass-card {
+    background: hsl(230 25% 14% / 0.6);
+    border: 1px solid hsl(230 25% 30% / 0.3);
+  }
+
+  .section-padding {
+    @apply px-4 py-16 sm:px-6 md:py-24 lg:px-8;
+  }
+
+  .gradient-text {
+    @apply bg-linear-to-r from-primary via-baby-blue-deep to-mint-deep bg-clip-text text-transparent;
+  }
+}
+
+@layer utilities {
+  .animate-fade-up {
+    animation: fade-up 0.55s ease-out both;
+  }
+
+  @keyframes fade-up {
+    from {
+      opacity: 0;
+      transform: translateY(14px);
+    }
+
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  .shadow-soft {
+    box-shadow: 0 10px 24px hsl(230 25% 20% / 0.08);
+  }
+
+  .shadow-glass {
+    box-shadow: 0 10px 30px hsl(250 40% 45% / 0.18);
+  }
+
+  .shadow-glass-lg {
+    box-shadow: 0 16px 44px hsl(250 40% 45% / 0.26);
+  }
+
+  .animate-float {
+    animation: float 6s ease-in-out infinite;
+  }
+
+  @keyframes float {
+    0%,
+    100% {
+      transform: translateY(0);
+    }
+
+    50% {
+      transform: translateY(-10px);
+    }
+  }
+}
+
+#root {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 2rem;
+  text-align: center;
+}
+
+.logo {
+  height: 6em;
+  padding: 1.5em;
+  will-change: filter;
+  transition: filter 300ms;
+}
+
+.logo:hover {
+  filter: drop-shadow(0 0 2em #646cffaa);
+}
+
+.logo.react:hover {
+  filter: drop-shadow(0 0 2em #61dafbaa);
+}
+
+@keyframes logo-spin {
+  from {
+    transform: rotate(0deg);
+  }
+
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  a:nth-of-type(2) .logo {
+    animation: logo-spin infinite 20s linear;
+  }
+}
+
+.card {
+  padding: 2em;
+}
+
+.read-the-docs {
+  color: #888;
+}
+
+/* Strong visual overrides for homepage */
+@layer components {
+  .home-shell {
+    background:
+      radial-gradient(1000px 500px at 10% 0%, hsl(250 80% 90% / 0.45), transparent 60%),
+      radial-gradient(900px 500px at 90% 10%, hsl(160 80% 88% / 0.4), transparent 60%),
+      radial-gradient(800px 420px at 50% 100%, hsl(200 80% 90% / 0.35), transparent 60%),
+      hsl(var(--background));
+  }
+
+  .dark .home-shell {
+    background:
+      radial-gradient(900px 420px at 10% 0%, hsl(250 70% 35% / 0.25), transparent 60%),
+      radial-gradient(900px 420px at 90% 15%, hsl(160 70% 30% / 0.2), transparent 60%),
+      radial-gradient(780px 420px at 50% 100%, hsl(200 70% 35% / 0.2), transparent 60%),
+      hsl(var(--background));
+  }
+
+  .home-shell nav {
+    backdrop-filter: blur(14px);
+  }
+
+  .home-shell h1,
+  .home-shell h2,
+  .home-shell h3,
+  .home-shell h4 {
+    font-family: "Poppins", "Inter", system-ui, sans-serif;
+    letter-spacing: -0.01em;
+  }
+
+  .home-shell p {
+    line-height: 1.65;
+  }
+
+  .home-shell .glass-card {
+    border-radius: 1rem;
+    border: 1px solid hsl(0 0% 100% / 0.52);
+    background: hsl(0 0% 100% / 0.7);
+    box-shadow:
+      0 12px 32px hsl(250 35% 35% / 0.16),
+      inset 0 1px 0 hsl(0 0% 100% / 0.5);
+  }
+
+  .dark .home-shell .glass-card {
+    border-color: hsl(230 20% 34% / 0.45);
+    background: hsl(230 25% 14% / 0.78);
+    box-shadow:
+      0 14px 34px hsl(230 45% 4% / 0.45),
+      inset 0 1px 0 hsl(230 18% 62% / 0.16);
+  }
+}
+
+/* === FlowExpence landing overrides (as requested) === */
+:root {
+  --background: hsl(230 30% 97%);
+  --foreground: hsl(230 25% 18%);
+  --card: hsl(0 0% 100%);
+  --card-foreground: hsl(230 25% 18%);
+  --popover: hsl(0 0% 100%);
+  --popover-foreground: hsl(230 25% 18%);
+  --primary: hsl(250 60% 65%);
+  --primary-foreground: hsl(0 0% 100%);
+  --secondary: hsl(160 40% 88%);
+  --secondary-foreground: hsl(160 40% 25%);
+  --muted: hsl(230 20% 93%);
+  --muted-foreground: hsl(230 15% 50%);
+  --accent: hsl(200 60% 85%);
+  --accent-foreground: hsl(200 60% 25%);
+  --destructive: hsl(0 70% 60%);
+  --destructive-foreground: hsl(0 0% 100%);
+  --border: hsl(230 20% 90%);
+  --input: hsl(230 20% 90%);
+  --ring: hsl(250 60% 65%);
+  --radius: 0.75rem;
+
+  --lavender: hsl(250 70% 85%);
+  --lavender-deep: hsl(250 60% 65%);
+  --mint: hsl(160 50% 85%);
+  --mint-deep: hsl(160 45% 55%);
+  --baby-blue: hsl(200 70% 85%);
+  --baby-blue-deep: hsl(200 60% 55%);
+  --peach: hsl(20 80% 88%);
+  --peach-deep: hsl(20 70% 60%);
+}
+
+.dark {
+  --background: hsl(230 25% 10%);
+  --foreground: hsl(230 15% 90%);
+  --card: hsl(230 25% 14%);
+  --card-foreground: hsl(230 15% 90%);
+  --popover: hsl(230 25% 14%);
+  --popover-foreground: hsl(230 15% 90%);
+  --primary: hsl(250 60% 70%);
+  --primary-foreground: hsl(0 0% 100%);
+  --secondary: hsl(160 30% 20%);
+  --secondary-foreground: hsl(160 40% 85%);
+  --muted: hsl(230 20% 18%);
+  --muted-foreground: hsl(230 15% 60%);
+  --accent: hsl(200 40% 22%);
+  --accent-foreground: hsl(200 60% 85%);
+  --destructive: hsl(0 62.8% 30.6%);
+  --destructive-foreground: hsl(210 40% 98%);
+  --border: hsl(230 20% 20%);
+  --input: hsl(230 20% 20%);
+  --ring: hsl(250 60% 70%);
+
+  --lavender: hsl(250 40% 30%);
+  --lavender-deep: hsl(250 50% 60%);
+  --mint: hsl(160 30% 25%);
+  --mint-deep: hsl(160 40% 50%);
+  --baby-blue: hsl(200 40% 28%);
+  --baby-blue-deep: hsl(200 50% 55%);
+  --peach: hsl(20 40% 25%);
+  --peach-deep: hsl(20 60% 55%);
+}
+
+@layer base {
+  body {
+    font-family: "Inter", system-ui, sans-serif;
+    background-color: var(--background);
+    color: var(--foreground);
+  }
+}
+
+@layer components {
+  .glass-card {
+    background: hsla(0, 0%, 100%, 0.6);
+    border: 1px solid hsla(0, 0%, 100%, 0.3);
+    border-radius: 1rem;
+    backdrop-filter: blur(20px);
+    box-shadow: 0 10px 30px hsl(250 40% 45% / 0.18);
+  }
+
+  .dark .glass-card {
+    background: hsla(230, 25%, 14%, 0.6);
+    border: 1px solid hsla(230, 25%, 30%, 0.3);
+  }
+
+  .section-padding {
+    padding: 4rem 1rem;
+  }
+
+  .gradient-text {
+    background-image: linear-gradient(to right, var(--primary), var(--baby-blue-deep), var(--mint-deep));
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+}
+
+@layer utilities {
+  .font-display {
+    font-family: "Poppins", "Inter", system-ui, sans-serif;
+  }
+
+  .bg-lavender { background-color: var(--lavender); }
+  .text-lavender-deep { color: var(--lavender-deep); }
+  .bg-mint { background-color: var(--mint); }
+  .text-mint-deep { color: var(--mint-deep); }
+  .bg-baby-blue { background-color: var(--baby-blue); }
+  .text-baby-blue-deep { color: var(--baby-blue-deep); }
+  .bg-peach { background-color: var(--peach); }
+  .text-peach-deep { color: var(--peach-deep); }
+
+  .shadow-soft { box-shadow: 0 10px 24px hsl(230 25% 20% / 0.08); }
+  .shadow-glass { box-shadow: 0 10px 30px hsl(250 40% 45% / 0.18); }
+  .shadow-glass-lg { box-shadow: 0 16px 44px hsl(250 40% 45% / 0.26); }
+
+  .animate-fade-up { animation: fade-up 0.55s ease-out both; }
+  .animate-float { animation: float 6s ease-in-out infinite; }
+
+  @keyframes fade-up {
+    from { opacity: 0; transform: translateY(14px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  @keyframes float {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-10px); }
+  }
+}
+
+/* Final homepage polish */
+@layer base {
+  body {
+    letter-spacing: 0.01em;
+    line-height: 1.55;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4 {
+    font-family: "Poppins", "Inter", system-ui, sans-serif;
+  }
+}
+
+@layer components {
+  .glass-card {
+    background: hsl(0 0% 100% / 0.68);
+    border: 1px solid hsl(0 0% 100% / 0.52);
+    backdrop-filter: blur(16px);
+    box-shadow:
+      0 14px 34px hsl(250 35% 45% / 0.15),
+      inset 0 1px 0 hsl(0 0% 100% / 0.45);
+  }
+
+  .dark .glass-card {
+    background: hsl(230 25% 14% / 0.72);
+    border: 1px solid hsl(230 22% 34% / 0.4);
+    box-shadow:
+      0 14px 34px hsl(230 40% 4% / 0.45),
+      inset 0 1px 0 hsl(230 18% 60% / 0.14);
+  }
+
+  .section-padding {
+    padding: 4.5rem 1rem;
+  }
+
+  .gradient-text {
+    background-image: linear-gradient(to right, var(--primary), var(--baby-blue-deep), var(--mint-deep));
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    filter: saturate(1.08);
+  }
+}
+
+@layer utilities {
+  .shadow-soft {
+    box-shadow: 0 8px 20px hsl(230 20% 20% / 0.08);
+  }
+
+  .shadow-glass {
+    box-shadow: 0 12px 30px hsl(250 40% 45% / 0.2);
+  }
+
+  .shadow-glass-lg {
+    box-shadow: 0 20px 48px hsl(250 40% 45% / 0.28);
+  }
+}
+
+@media (min-width: 640px) {
+  .section-padding {
+    padding-inline: 1.5rem;
+  }
+}
+
+@media (min-width: 768px) {
+  .section-padding {
+    padding-block: 6rem;
+  }
+}
+
+@media (min-width: 1024px) {
+  .section-padding {
+    padding-inline: 2rem;
+  }
+}
+
+/* Fallback plain CSS so homepage styles are always visible */
+.font-display {
+  font-family: "Poppins", "Inter", system-ui, sans-serif !important;
+}
+
+.bg-lavender { background-color: hsl(250 70% 85%) !important; }
+.text-lavender-deep { color: hsl(250 60% 65%) !important; }
+.bg-mint { background-color: hsl(160 50% 85%) !important; }
+.text-mint-deep { color: hsl(160 45% 55%) !important; }
+.bg-baby-blue { background-color: hsl(200 70% 85%) !important; }
+.text-baby-blue-deep { color: hsl(200 60% 55%) !important; }
+.bg-peach { background-color: hsl(20 80% 88%) !important; }
+.text-peach-deep { color: hsl(20 70% 60%) !important; }
+
+.glass-card {
+  background: hsla(0, 0%, 100%, 0.68) !important;
+  border: 1px solid hsla(0, 0%, 100%, 0.45) !important;
+  border-radius: 1rem !important;
+  backdrop-filter: blur(14px) !important;
+  box-shadow: 0 14px 34px hsl(250 35% 45% / 0.16) !important;
+}
+
+.dark .glass-card {
+  background: hsla(230, 25%, 14%, 0.78) !important;
+  border-color: hsla(230, 22%, 34%, 0.45) !important;
+}
+
+.section-padding {
+  padding: 4rem 1rem !important;
+}
+
+@media (min-width: 640px) {
+  .section-padding { padding-inline: 1.5rem !important; }
+}
+
+@media (min-width: 768px) {
+  .section-padding { padding-block: 6rem !important; }
+}
+
+@media (min-width: 1024px) {
+  .section-padding { padding-inline: 2rem !important; }
+}
+
+.gradient-text {
+  background-image: linear-gradient(to right, hsl(250 60% 65%), hsl(200 60% 55%), hsl(160 45% 55%)) !important;
+  -webkit-background-clip: text !important;
+  background-clip: text !important;
+  color: transparent !important;
+}
+
+.shadow-soft { box-shadow: 0 8px 20px hsl(230 20% 20% / 0.1) !important; }
+.shadow-glass { box-shadow: 0 12px 30px hsl(250 40% 45% / 0.2) !important; }
+.shadow-glass-lg { box-shadow: 0 20px 48px hsl(250 40% 45% / 0.28) !important; }
+
+.animate-fade-up { animation: fade-up 0.55s ease-out both !important; }
+.animate-float { animation: float 6s ease-in-out infinite !important; }
