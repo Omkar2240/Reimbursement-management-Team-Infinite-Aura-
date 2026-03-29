@@ -32,7 +32,8 @@ const swaggerDocs = {
   webSpec: {
     openapi: '3.0.0',
     info: {
-      title: 'FlowExpense – Smart Reimbursement Engine Web/Mobile API Development',
+      title:
+        'FlowExpense – Smart Reimbursement Engine Web/Mobile API Development',
       version: '1.0.0',
       description:
         'This is a REST API application made with Express. It retrieves data from JSONPlaceholder.',

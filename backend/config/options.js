@@ -172,12 +172,8 @@ const options = {
       options.usersRoles.SUPER_ADMIN,
       options.usersRoles.ADMIN,
     ],
-    getManagerArray: () => [
-      options.usersRoles.MANAGER,
-    ],
-    getEmployeeArray: () => [
-      options.usersRoles.EMPLOYEE,
-    ],
+    getManagerArray: () => [options.usersRoles.MANAGER],
+    getEmployeeArray: () => [options.usersRoles.EMPLOYEE],
     getAllRolesAsArray: () => [
       options.usersRoles.SUPER_ADMIN,
       options.usersRoles.ADMIN,
@@ -212,12 +208,7 @@ const options = {
       'expenses:viewTeam',
       'expenses:escalate',
     ],
-    EMPLOYEE: [
-      'expenses:submit',
-      'expenses:viewOwn',
-      'expenses:viewStatus',
-    ],
-
+    EMPLOYEE: ['expenses:submit', 'expenses:viewOwn', 'expenses:viewStatus'],
   },
   getRolePermissions: (role) => options.rolePermissions[role] || [],
   can: (user, permission) => {
@@ -232,8 +223,8 @@ const options = {
   accessManagementType: {
     DASHBOARD: 'dashboard',
     ADMINS: 'admins',
-    USER: 'user',
-    PARENT: 'parent',
+    MANAGER: 'manager',
+    EMPLOYEE: 'employee',
   },
   cronType: {},
   cronJobTimings: {},

@@ -7,7 +7,7 @@ const { generatePassword } = require('../models/helpers/UtilHelper');
 module.exports = {
   async up(queryInterface, Sequelize) {
     try {
-      const email = 'support@reimbursement-management.com';
+      const email = 'superadmin@flowexpense.com';
       const password = 'code@2025';
 
       const passwordHash = await generatePassword(password);
@@ -32,7 +32,7 @@ module.exports = {
   },
 
   async down(queryInterface, Sequelize) {
-    const email = 'support@reimbursement-management.com';
+    const email = 'superadmin@flowexpense.com';
     await queryInterface.bulkDelete('User', {
       email,
       role: usersRoles.SUPER_ADMIN,
