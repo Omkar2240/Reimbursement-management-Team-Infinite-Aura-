@@ -1,20 +1,19 @@
 const { resCode, genRes, errorMessage } = require('../../../config/options');
+const CompanyRepository = require('../../../models/repositories/CompanyRepository');
 
 exports.getActiveCompaniesList = async (req, res) => {
   try {
-    // TODO: replace with DB query once Company model exists
-    const companies = [
-      {
-        id: 1,
-        name: 'Example Company',
-        status: 'active',
-      },
-    ];
+    const { success, data } = await CompanyRepository.getCompanies();
+    if (!success) {
+      return res
+        .status(resCode.HTTP_BAD_REQUEST)
+        .json(genRes(resCode.HTTP_BAD_REQUEST, 'Unable to fetch companies'));
+    }
 
     return res.status(resCode.HTTP_OK).json(
       genRes(resCode.HTTP_OK, {
-        rows: companies,
-        count: companies.length,
+        rows: data,
+        count: data.length,
       })
     );
   } catch (error) {

@@ -70,8 +70,7 @@ const updateAdmin = {
   countryCode: {
     in: ['body'],
     trim: true,
-    notEmpty: true,
-    errorMessage: 'Country code cannot be empty',
+    optional: true,
     isString: {
       errorMessage: 'Country code must be string',
     },
@@ -79,8 +78,7 @@ const updateAdmin = {
   mobileNumber: {
     in: ['body'],
     trim: true,
-    notEmpty: true,
-    errorMessage: 'Mobile number cannot be empty',
+    optional: true,
     isString: {
       errorMessage: 'Mobile number must be string',
     },
@@ -88,8 +86,7 @@ const updateAdmin = {
   email: {
     in: ['body'],
     trim: true,
-    notEmpty: true,
-    errorMessage: 'Email cannot be empty',
+    optional: true,
     isString: {
       errorMessage: 'Email must be string',
     },
@@ -97,8 +94,7 @@ const updateAdmin = {
   firstName: {
     in: ['body'],
     trim: true,
-    notEmpty: true,
-    errorMessage: 'First name cannot be empty',
+    optional: true,
     isString: {
       errorMessage: 'First name must be string',
     },
@@ -106,10 +102,25 @@ const updateAdmin = {
   lastName: {
     in: ['body'],
     trim: true,
-    notEmpty: true,
-    errorMessage: 'Last name cannot be empty',
+    optional: true,
     isString: {
       errorMessage: 'Last name must be string',
+    },
+  },
+  country: {
+    in: ['body'],
+    trim: true,
+    optional: true,
+    isString: {
+      errorMessage: 'Country must be string',
+    },
+  },
+  currencyCode: {
+    in: ['body'],
+    trim: true,
+    optional: true,
+    isString: {
+      errorMessage: 'currencyCode must be string',
     },
   },
 };

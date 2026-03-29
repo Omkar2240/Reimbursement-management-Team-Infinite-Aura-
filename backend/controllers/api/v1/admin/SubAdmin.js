@@ -3,6 +3,9 @@ const {
   checkAndCreateAdmin,
   checkAndUpdateAdmin,
   checkAndPatchAdminStatus,
+  checkAndPatchAdminStatusByValue,
+  assignManagerToEmployee,
+  getManagerTeam,
   checkAndGetAdmin,
 } = require('../../../../models/repositories/SubAdminRepository');
 const {
@@ -15,7 +18,11 @@ const {
 
 const postCreateAdmin = async (req, res) => {
   try {
-    const { success, data, message } = await checkAndCreateAdmin(req.body);
+    const payload = {
+      ...req.body,
+      currentUserCompanyId: req.user?.companyId || null,
+    };
+    const { success, data, message } = await checkAndCreateAdmin(payload);
     if (!success) {
       return res
         .status(resCode.HTTP_BAD_REQUEST)
@@ -135,10 +142,12 @@ const putUpdateAdmin = async (req, res) => {
 
 const patchChangeStatus = async (req, res) => {
   try {
-    const { success, message } = await checkAndPatchAdminStatus(
-      req.params.id,
-      false
-    );
+    const { is_active } = req.body || {};
+    const result =
+      typeof is_active === 'boolean'
+        ? await checkAndPatchAdminStatusByValue(req.params.id, is_active)
+        : await checkAndPatchAdminStatus(req.params.id, false);
+    const { success, message } = result;
     if (!success) {
       return res
         .status(resCode.HTTP_BAD_REQUEST)
@@ -201,6 +210,59 @@ const deleteAdmin = async (req, res) => {
   }
 };
 
+const patchAssignManager = async (req, res) => {
+  try {
+    const { success, message, data } = await assignManagerToEmployee(
+      req.params.id,
+      req.body.managerId
+    );
+    if (!success) {
+      return res
+        .status(resCode.HTTP_BAD_REQUEST)
+        .json(genRes(resCode.HTTP_BAD_REQUEST, message));
+    }
+    return res
+      .status(resCode.HTTP_OK)
+      .json(genRes(resCode.HTTP_OK, { message, data }));
+  } catch (e) {
+    customErrorLogger(e);
+    return res
+      .status(resCode.HTTP_INTERNAL_SERVER_ERROR)
+      .json(
+        genRes(
+          resCode.HTTP_INTERNAL_SERVER_ERROR,
+          errorMessage.SERVER_ERROR,
+          errorTypes.INTERNAL_SERVER_ERROR
+        )
+      );
+  }
+};
+
+const getTeamMembers = async (req, res) => {
+  try {
+    const { success, message, data } = await getManagerTeam(req.params.id);
+    if (!success) {
+      return res
+        .status(resCode.HTTP_BAD_REQUEST)
+        .json(genRes(resCode.HTTP_BAD_REQUEST, message));
+    }
+    return res
+      .status(resCode.HTTP_OK)
+      .json(genRes(resCode.HTTP_OK, { message, data }));
+  } catch (e) {
+    customErrorLogger(e);
+    return res
+      .status(resCode.HTTP_INTERNAL_SERVER_ERROR)
+      .json(
+        genRes(
+          resCode.HTTP_INTERNAL_SERVER_ERROR,
+          errorMessage.SERVER_ERROR,
+          errorTypes.INTERNAL_SERVER_ERROR
+        )
+      );
+  }
+};
+
 module.exports = {
   postCreateAdmin,
   getAdminListing,
@@ -208,4 +270,6 @@ module.exports = {
   putUpdateAdmin,
   patchChangeStatus,
   deleteAdmin,
+  patchAssignManager,
+  getTeamMembers,
 };

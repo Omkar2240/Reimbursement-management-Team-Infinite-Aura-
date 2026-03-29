@@ -260,6 +260,22 @@ exports.signUp = {
       errorMessage: 'Referral code must be string',
     },
   },
+  country: {
+    in: ['body'],
+    trim: true,
+    optional: true,
+    isString: {
+      errorMessage: 'Country must be string',
+    },
+  },
+  currencyCode: {
+    in: ['body'],
+    trim: true,
+    optional: true,
+    isString: {
+      errorMessage: 'currencyCode must be string',
+    },
+  },
 };
 exports.sendOtpToEmail = {
   email: {

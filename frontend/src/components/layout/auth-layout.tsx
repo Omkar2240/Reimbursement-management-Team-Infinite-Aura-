@@ -21,7 +21,7 @@ export default function AuthLayout({ children }: { children: React.ReactNode }) 
             <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary text-primary-foreground shadow-lg">
               <ShieldCheck size={24} />
             </div>
-            <span className="text-2xl font-bold tracking-tight">FlowReimburse</span>
+            <span className="text-2xl font-bold tracking-tight dark:text-amber-50">FlowExpense</span>
           </div>
           <h1 className="text-4xl font-bold tracking-tight mt-24 leading-tight">
             Streamline your expense reporting.
@@ -30,9 +30,9 @@ export default function AuthLayout({ children }: { children: React.ReactNode }) 
             Submit, track, and approve employee reimbursements seamlessly. No more paper receipts or lost email threads.
           </p>
         </div>
-        
+
         <div className="relative z-10 text-sm font-medium text-zinc-500">
-          &copy; {new Date().getFullYear()} FlowReimburse. All rights reserved.
+          &copy; {new Date().getFullYear()} FlowExpense. All rights reserved.
         </div>
       </div>
 

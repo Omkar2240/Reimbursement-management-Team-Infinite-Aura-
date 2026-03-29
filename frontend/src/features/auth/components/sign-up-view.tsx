@@ -1,15 +1,17 @@
 "use client"
 
-import { useState } from "react"
-import Link from "next/link"
+import { useMemo } from "react"
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { Loader2 } from "lucide-react"
+import Link from "next/link"
 
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
+import { SearchableDropdown } from "@/components/ui/searchable-dropdown"
 import { signupSchema, type SignupFormValues } from "@/schemas/auth.schema"
 import { useSignup } from "@/hooks/auth/use-auth"
+import { useCountries } from "@/hooks/external/use-countries"
 import {
   Form,
   FormControl,
@@ -20,45 +22,48 @@ import {
 } from "@/components/ui/form"
 
 export default function SignUpViewPage() {
-  const [showPassword, setShowPassword] = useState(false)
-
   const signupMutation = useSignup()
+  const { data: countryData } = useCountries()
+  const countries = useMemo(() => countryData?.countries || [], [countryData?.countries])
 
   const form = useForm<SignupFormValues>({
-    resolver: zodResolver(signupSchema as any),
+    resolver: zodResolver(signupSchema),
     defaultValues: {
       firstName: "",
       lastName: "",
       email: "",
-      password: "",
-      countryCode: "+91",
+      countryCode: "91",
       mobileNumber: "",
-      referralCode: "",
+      password: "",
+      country: "",
+      currencyCode: "",
     },
   })
 
-  const onSubmit = (data: SignupFormValues) => {
-    signupMutation.mutate(data)
+  const selectedCountry = form.watch("country")
+  const currencyOptions = useMemo(() => {
+    const c = countries.find((country) => country.name === selectedCountry)
+    return c?.currencies || []
+  }, [countries, selectedCountry])
+
+  const onSubmit = (values: SignupFormValues) => {
+    signupMutation.mutate(values)
   }
 
   return (
     <div className="w-full">
       <div className="mb-8">
         <h2 className="text-2xl font-semibold tracking-tight text-zinc-900 dark:text-zinc-100">
-          Create your account
+          Create Admin account
         </h2>
         <p className="text-sm text-zinc-500 mt-2">
-          Already have an account?{" "}
-          <Link href="/login" className="text-primary font-medium hover:underline">
-            Sign in here
-          </Link>
+          Signup is available for Admin users. Managers and Employees are created by Admin.
         </p>
       </div>
 
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <FormField
               control={form.control}
               name="firstName"
@@ -72,7 +77,6 @@ export default function SignUpViewPage() {
                 </FormItem>
               )}
             />
-
             <FormField
               control={form.control}
               name="lastName"
@@ -93,46 +97,16 @@ export default function SignUpViewPage() {
             name="email"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Work Email</FormLabel>
+                <FormLabel>Email</FormLabel>
                 <FormControl>
-                  <Input placeholder="john@acme.com" {...field} />
+                  <Input placeholder="name@company.com" {...field} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
             )}
           />
 
-          <FormField
-            control={form.control}
-            name="password"
-            render={({ field }) => (
-              <FormItem>
-                <div className="flex items-center justify-between">
-                  <FormLabel>Password</FormLabel>
-                </div>
-                <div className="relative">
-                  <FormControl>
-                    <Input
-                      type={showPassword ? "text" : "password"}
-                      placeholder="••••••••"
-                      {...field}
-                    />
-                  </FormControl>
-                  <button
-                    type="button"
-                    onClick={() => setShowPassword(!showPassword)}
-                    className="absolute right-3 top-1/2 -translate-y-1/2 text-zinc-400 hover:text-zinc-600 focus:outline-none"
-                    tabIndex={-1}
-                  >
-                    {showPassword ? "Hide" : "Show"}
-                  </button>
-                </div>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <FormField
               control={form.control}
               name="countryCode"
@@ -140,13 +114,12 @@ export default function SignUpViewPage() {
                 <FormItem>
                   <FormLabel>Country Code</FormLabel>
                   <FormControl>
-                    <Input placeholder="+91" {...field} />
+                    <Input placeholder="91" {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
               )}
             />
-
             <FormField
               control={form.control}
               name="mobileNumber"
@@ -154,7 +127,7 @@ export default function SignUpViewPage() {
                 <FormItem>
                   <FormLabel>Mobile Number</FormLabel>
                   <FormControl>
-                    <Input placeholder="9876543210" {...field} />
+                    <Input placeholder="9999999999" {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -164,30 +137,75 @@ export default function SignUpViewPage() {
 
           <FormField
             control={form.control}
-            name="referralCode"
+            name="password"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Referral Code (optional)</FormLabel>
+                <FormLabel>Password</FormLabel>
                 <FormControl>
-                  <Input placeholder="Enter referral code" {...field} value={field.value ?? ""} />
+                  <Input type="password" placeholder="••••••••" {...field} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
             )}
           />
 
-          <Button
-            type="submit"
-            className="w-full mt-6"
-            disabled={signupMutation.isPending}
-          >
-            {signupMutation.isPending && (
-              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-            )}
-            Create account
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <FormField
+              control={form.control}
+              name="countryCode"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Country</FormLabel>
+                  <FormControl>
+                    <SearchableDropdown
+                      options={countries.map((country) => country.name)}
+                      value={field.value}
+                      onChange={(value) => {
+                        field.onChange(value)
+                        form.setValue("currencyCode", "")
+                      }}
+                      placeholder="Select country"
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="currencyCode"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Currency</FormLabel>
+                  <FormControl>
+                    <SearchableDropdown
+                      options={currencyOptions}
+                      value={field.value}
+                      onChange={field.onChange}
+                      placeholder="Select currency"
+                      disabled={!selectedCountry}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+          </div>
+
+          <Button type="submit" className="w-full" disabled={signupMutation.isPending}>
+            {signupMutation.isPending ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
+            Sign up as Admin
           </Button>
         </form>
       </Form>
+
+      <p className="text-sm text-zinc-500 mt-4">
+        Already have an account?{" "}
+        <Link href="/login" className="text-primary underline underline-offset-2">
+          Sign in
+        </Link>
+      </p>
     </div>
   )
 }
+
