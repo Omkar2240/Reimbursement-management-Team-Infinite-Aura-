@@ -1,20 +1,31 @@
 import apiClient from '@/config/api.config';
-import { LoginFormValues, SignupFormValues } from '@/schemas/auth.schema';
+import {
+  LoginFormValues,
+  ResetPasswordWithOtpFormValues,
+  SendOtpFormValues,
+  UpdateProfileFormValues
+} from '@/schemas/auth.schema';
 
-const BASE_URLS = `/api/v1/auth`;
+const USER_BASE_URL = 'v1/admin/user';
 
 export const postLogin = async (payload: LoginFormValues): Promise<any> => {
-  return await apiClient.post(`${BASE_URLS}/login`, payload);
-};
-
-export const postSignUp = async (payload: SignupFormValues): Promise<any> => {
-  return await apiClient.post(`${BASE_URLS}/signup`, payload);
+  return await apiClient.post(`${USER_BASE_URL}/login`, payload);
 };
 
 export const getMe = async (): Promise<any> => {
-  return await apiClient.get(`${BASE_URLS}/me`);
+  return await apiClient.get(`${USER_BASE_URL}`);
 };
 
-export const postLogout = async (): Promise<any> => {
-  return await apiClient.post(`${BASE_URLS}/logout`);
+export const putProfile = async (payload: UpdateProfileFormValues): Promise<any> => {
+  return await apiClient.put(`${USER_BASE_URL}`, payload);
+};
+
+export const postSendOtp = async (payload: SendOtpFormValues): Promise<any> => {
+  return await apiClient.post(`${USER_BASE_URL}/send-otp`, payload);
+};
+
+export const patchPasswordWithOtp = async (
+  payload: ResetPasswordWithOtpFormValues
+): Promise<any> => {
+  return await apiClient.patch(`${USER_BASE_URL}/password`, payload);
 };

@@ -10,7 +10,12 @@ export default function ExpenseDashboardView() {
   return (
     <div className="p-8">
       <div className="flex justify-between items-center mb-8">
-        <h1 className="text-3xl font-bold tracking-tight">Your Expenses</h1>
+        <div>
+          <h1 className="text-3xl font-bold tracking-tight">Your Expenses</h1>
+          <p className="mt-2 text-sm text-zinc-500">
+            Submit amount, category, date, and description. Approvals move step-by-step through your company chain.
+          </p>
+        </div>
         <button className="bg-primary text-primary-foreground px-4 py-2 rounded-md font-medium shadow">
           Create Expense
         </button>
@@ -26,6 +31,7 @@ export default function ExpenseDashboardView() {
                 <th className="px-6 py-4 font-medium text-zinc-500">Title</th>
                 <th className="px-6 py-4 font-medium text-zinc-500">Amount</th>
                 <th className="px-6 py-4 font-medium text-zinc-500">Date</th>
+                <th className="px-6 py-4 font-medium text-zinc-500">Category</th>
                 <th className="px-6 py-4 font-medium text-zinc-500">Status</th>
               </tr>
             </thead>
@@ -39,13 +45,14 @@ export default function ExpenseDashboardView() {
                   <td className="px-6 py-4 text-zinc-500">
                     {new Date(expense.date).toLocaleDateString()}
                   </td>
+                  <td className="px-6 py-4 text-zinc-500">{expense.category}</td>
                   <td className="px-6 py-4">
                     <ExpenseStatusBadge status={expense.status} />
                   </td>
                 </tr>
               )) : (
                 <tr>
-                  <td colSpan={4} className="px-6 py-12 text-center text-zinc-500">
+                  <td colSpan={5} className="px-6 py-12 text-center text-zinc-500">
                     No expenses found.
                   </td>
                 </tr>
@@ -54,6 +61,10 @@ export default function ExpenseDashboardView() {
           </table>
         </div>
       )}
+
+      <p className="mt-4 text-xs text-zinc-500">
+        Rule shortcut example: a CFO approval can auto-approve and skip remaining steps based on admin-configured conditions.
+      </p>
     </div>
   )
 }

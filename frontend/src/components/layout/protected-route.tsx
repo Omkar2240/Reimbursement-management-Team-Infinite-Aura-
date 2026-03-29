@@ -25,10 +25,10 @@ export default function ProtectedRoute({ children, allowedRoles }: ProtectedRout
       const userRole = user.role?.toUpperCase()
       const hasPermission = allowedRoles.some(role => role.toUpperCase() === userRole)
       
-      if (!hasPermission) {
-        router.replace("/") // Or push to an unauthorized page if you prefer
+        if (!hasPermission) {
+          router.replace("/expenses")
+        }
       }
-    }
   }, [user, isLoading, isError, router, allowedRoles])
 
   // Show a blank or loading state while fetching auth to prevent unauthorized flashing

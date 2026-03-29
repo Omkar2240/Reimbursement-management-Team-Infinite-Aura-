@@ -11,7 +11,7 @@ export default function AuthLayoutWrapper({ children }: { children: React.ReactN
   useEffect(() => {
     
     if (!isLoading && user) {
-      router.replace("/")
+      router.replace("/expenses")
     }
   }, [user, isLoading, router])
 

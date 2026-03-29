@@ -18,6 +18,7 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export function AuthProvider({ children }: { children: ReactNode }) {
   const router = useRouter();
+  const hasToken = Boolean(storage.getToken());
 
   const {
     data: user,
@@ -26,7 +27,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   } = useQuery({
     queryKey: ['profile'],
     queryFn: getMe,
-    retry: false
+    retry: false,
+    enabled: hasToken
   });
 
   const logout = () => {
@@ -40,7 +42,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     router.replace('/login');
   };
   return (
-    <AuthContext.Provider value={{ user, isLoading, isError, logout }}>
+    <AuthContext.Provider
+      value={{ user: hasToken ? user : null, isLoading: hasToken ? isLoading : false, isError, logout }}
+    >
       {children}
     </AuthContext.Provider>
   );

@@ -3,12 +3,13 @@
 import React from "react"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
-import { ShieldCheck, LayoutDashboard, Receipt, UserCog, Settings } from "lucide-react"
+import { ShieldCheck, LayoutDashboard, Receipt, UserCog, Settings, Users } from "lucide-react"
 import { cn } from "@/lib/utils"
 
 const navigation = [
   { name: "Overview", href: "/", icon: LayoutDashboard },
   { name: "Expenses", href: "/expenses", icon: Receipt },
+  { name: "Team", href: "/admin/sub-admin", icon: Users },
   { name: "Admin Rules", href: "/admin/rules", icon: UserCog },
   { name: "Settings", href: "/settings", icon: Settings },
 ]
@@ -22,7 +23,7 @@ export default function Sidebar() {
         <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary text-primary-foreground shadow">
           <ShieldCheck size={18} />
         </div>
-        <span className="text-xl font-bold tracking-tight">FlowReimburse</span>
+        <span className="text-xl font-bold tracking-tight">FlowExpense</span>
       </div>
       <nav className="flex flex-1 flex-col">
         <ul role="list" className="flex flex-1 flex-col gap-y-7">
